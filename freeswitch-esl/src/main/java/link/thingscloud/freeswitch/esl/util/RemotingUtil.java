@@ -37,11 +37,11 @@ public class RemotingUtil {
     /**
      * <p>socketAddress2String.</p>
      *
-     * @param addr a {@link java.net.SocketAddress} object.
+     * @param address a {@link java.net.SocketAddress} object.
      * @return a {@link java.lang.String} object.
      */
-    public static String socketAddress2String(final SocketAddress addr) {
-        InetSocketAddress inetSocketAddress = (InetSocketAddress) addr;
+    public static String socketAddress2String(final SocketAddress address) {
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
         return inetSocketAddress.getAddress().getHostAddress() +
                 ":" +
                 inetSocketAddress.getPort();

@@ -34,14 +34,14 @@
     // 设置 ESL 事件监听器
     option.addListener(new IEslEventListener() {
         @Override
-        public void eventReceived(String addr, EslEvent event) {
-            System.out.println(addr);
+        public void eventReceived(String address, EslEvent event) {
+            System.out.println(address);
             System.out.println(event);
         }
 
         @Override
-        public void backgroundJobResultReceived(String addr, EslEvent event) {
-            System.out.println(addr);
+        public void backgroundJobResultReceived(String address, EslEvent event) {
+            System.out.println(address);
             System.out.println(event);
         }
     });

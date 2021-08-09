@@ -27,7 +27,7 @@ public class EslEventUtil {
     public static final String FREESWITCH_SWITCHNAME = "FreeSWITCH-Switchname";
 
     public static final String CALLER_UNIQUE_ID = "Caller-Unique-ID";
-    public static final String CALLER_NETWORK_ADDR = "Caller-Network-Addr";
+    public static final String CALLER_NETWORK_ADDR = "Caller-Network-address";
 
     public static final String CALLER_CONTEXT = "Caller-Context";
     public static final String CALLER_DIALPLAN = "Caller-Dialplan";

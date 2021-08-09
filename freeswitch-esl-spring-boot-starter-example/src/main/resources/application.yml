@@ -7,11 +7,12 @@ link:
           performance: false
           performanceCostTime: 200
           servers:
-            - host: 127.0.0.1
+            - host: 192.168.10.112
               port: 8021
               timeoutSeconds: 5
-            - host: 127.0.0.1
+            - host: 192.168.10.114
               port: 8021
+              timeoutSeconds: 5
           events:
             - all
 #logging:

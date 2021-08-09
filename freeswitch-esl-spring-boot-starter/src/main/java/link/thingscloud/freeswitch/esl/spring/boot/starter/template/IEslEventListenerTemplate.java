@@ -53,26 +53,26 @@ public class IEslEventListenerTemplate implements IEslEventListener, Initializin
      * {@inheritDoc}
      */
     @Override
-    public void eventReceived(String addr, EslEvent event) {
-        handleEslEvent(addr, event);
+    public void eventReceived(String address, EslEvent event) {
+        handleEslEvent(address, event);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void backgroundJobResultReceived(String addr, EslEvent event) {
-        handleEslEvent(addr, event);
+    public void backgroundJobResultReceived(String address, EslEvent event) {
+        handleEslEvent(address, event);
     }
 
-    private void handleEslEvent(String addr, EslEvent event) {
+    private void handleEslEvent(String address, EslEvent event) {
         String eventName = event.getEventName();
         List<EslEventHandler> handlers = handlerTable.get(eventName);
         if (!CollectionUtils.isEmpty(handlers)) {
-            handlers.forEach(eventHandler -> eventHandler.handle(addr, event));
+            handlers.forEach(eventHandler -> eventHandler.handle(address, event));
             return;
         }
-        defaultEventHandler.handle(addr, event);
+        defaultEventHandler.handle(address, event);
     }
 
 

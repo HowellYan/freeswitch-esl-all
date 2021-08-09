@@ -421,7 +421,7 @@ public class InboundClientOption {
      */
     public InboundClientOption addServerOption(ServerOption serverOption) {
         for (ServerOption option : serverOptions) {
-            if (StringUtils.equals(option.addr(), serverOption.addr())) {
+            if (StringUtils.equals(option.address(), serverOption.address())) {
                 return this;
             }
         }

@@ -85,8 +85,8 @@ public class EslFrameDecoder extends ReplayingDecoder<EslFrameDecoder.State> {
                 /*
                  *  read '\n' terminated lines until reach a single '\n'
                  */
-                boolean reachedDoubleLF = false;
-                while (!reachedDoubleLF) {
+                boolean reachedDouble = false;
+                while (!reachedDouble) {
                     // this will read or fail
                     String headerLine = readToLineFeedOrFail(buffer, maxHeaderSize);
                     log.trace("read header line [{}]", headerLine);
@@ -104,7 +104,7 @@ public class EslFrameDecoder extends ReplayingDecoder<EslFrameDecoder.State> {
                         }
                         currentMessage.addHeader(headerName, headerParts[1]);
                     } else {
-                        reachedDoubleLF = true;
+                        reachedDouble = true;
                     }
                     // do not read in this line again
                     checkpoint();

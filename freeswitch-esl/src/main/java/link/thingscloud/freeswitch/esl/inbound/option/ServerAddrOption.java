@@ -44,7 +44,7 @@ public class ServerAddrOption {
      */
     public String first() {
         Validate.notEmpty(serverOptions, VALIDATE_MESSAGE_1);
-        return serverOptions.get(0).addr();
+        return serverOptions.get(0).address();
     }
 
     /**
@@ -54,7 +54,7 @@ public class ServerAddrOption {
      */
     public String last() {
         Validate.notEmpty(serverOptions, VALIDATE_MESSAGE_1);
-        return serverOptions.get(serverOptions.size() - 1).addr();
+        return serverOptions.get(serverOptions.size() - 1).address();
     }
 
     /**
@@ -64,7 +64,7 @@ public class ServerAddrOption {
      */
     public String random() {
         Validate.notEmpty(serverOptions, VALIDATE_MESSAGE_1);
-        return serverOptions.get(RandomUtils.nextInt(0, serverOptions.size())).addr();
+        return serverOptions.get(RandomUtils.nextInt(0, serverOptions.size())).address();
     }
 
 

@@ -31,7 +31,7 @@ public class DefaultEslEventHandler extends AbstractEslEventHandler {
      * {@inheritDoc}
      */
     @Override
-    public void handle(String addr, EslEvent event) {
-        log.warn("Default esl event handler handle addr[{}], event[{}]", addr, EslHelper.formatEslEvent(event));
+    public void handle(String address, EslEvent event) {
+        log.warn("Default esl event handler handle address[{}], event[{}]", address, EslHelper.formatEslEvent(event));
     }
 }

@@ -100,7 +100,7 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
         log.info("inbound client will shutdown ...");
         option().serverOptions().forEach(serverOption -> {
             serverOption.state(ConnectState.SHUTDOWN);
-            InboundChannelHandler inboundChannelHandler = handlerTable.get(serverOption.addr());
+            InboundChannelHandler inboundChannelHandler = handlerTable.get(serverOption.address());
             if (inboundChannelHandler != null) {
                 inboundChannelHandler.close().addListener((ChannelFutureListener) future -> {
                     if (future.isSuccess()) {
@@ -122,7 +122,7 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
         handlerTable.put(remoteAddr, inboundChannelHandler);
         // 连接监听
         option().serverOptions().forEach(serverOption -> {
-            if (StringUtils.equals(serverOption.addr(), remoteAddr)) {
+            if (StringUtils.equals(serverOption.address(), remoteAddr)) {
                 if (option().serverConnectionListener() != null) {
                     option().serverConnectionListener().onOpened(serverOption);
                 }
@@ -137,7 +137,7 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
     public void onChannelClosed(String remoteAddr) {
         handlerTable.remove(remoteAddr);
         option().serverOptions().forEach(serverOption -> {
-            if (StringUtils.equals(serverOption.addr(), remoteAddr)) {
+            if (StringUtils.equals(serverOption.address(), remoteAddr)) {
                 // 连接监听
                 if (option().serverConnectionListener() != null) {
                     option().serverConnectionListener().onClosed(serverOption);
@@ -154,14 +154,14 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
      * {@inheritDoc}
      */
     @Override
-    public void handleAuthRequest(String addr, InboundChannelHandler inboundChannelHandler) {
-        log.info("Auth requested[{}], sending [auth {}]", addr, "*****");
+    public void handleAuthRequest(String address, InboundChannelHandler inboundChannelHandler) {
+        log.info("Auth requested[{}], sending [auth {}]", address, "*****");
         for (ServerOption serverOption : option().serverOptions()) {
             String password = serverOption.password();
             if (password == null) {
                 password = option().defaultPassword();
             }
-            if (StringUtils.equals(addr, serverOption.addr())) {
+            if (StringUtils.equals(address, serverOption.address())) {
                 EslMessage response = inboundChannelHandler.sendSyncSingleLineCommand("auth " + password);
                 log.debug("Auth response [{}]", response);
                 if (response.getContentType().equals(EslHeaders.Value.COMMAND_REPLY)) {
@@ -173,7 +173,7 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
                         for (String event : option().events()) {
                             sb.append(event).append(" ");
                         }
-                        setEventSubscriptions(addr, "plain", sb.toString());
+                        setEventSubscriptions(address, "plain", sb.toString());
                     }
                 } else {
                     serverOption.state(ConnectState.AUTHED_FAILED);
@@ -188,7 +188,7 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
      * {@inheritDoc}
      */
     @Override
-    public void handleEslEvent(String addr, EslEvent event) {
+    public void handleEslEvent(String address, EslEvent event) {
         option().listeners().forEach(listener -> {
             long start = 0L;
             if (option().performance()) {
@@ -205,7 +205,7 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
                     log.warn("[event performance] received esl event diff time : {}ms, event is blocked.", cost);
                 }
             }
-            log.debug("Event addr[{}] received [{}]", addr, event);
+            log.debug("Event address[{}] received [{}]", address, event);
             /*
              *  Notify listeners in a different thread in order to:
              *    - not to block the IO threads with potentially long-running listeners
@@ -215,15 +215,15 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
              */
             if (StringUtils.equals(event.getEventName(), EslConstant.BACKGROUND_JOB)) {
                 try {
-                    listener.backgroundJobResultReceived(addr, event);
+                    listener.backgroundJobResultReceived(address, event);
                 } catch (Throwable t) {
-                    log.error("Error caught notifying listener of job result [{}], remote address [{}]", event, addr, t);
+                    log.error("Error caught notifying listener of job result [{}], remote address [{}]", event, address, t);
                 }
             } else {
                 try {
-                    listener.eventReceived(addr, event);
+                    listener.eventReceived(address, event);
                 } catch (Throwable t) {
-                    log.error("Error caught notifying listener of event [{}], remote address [{}]", event, addr, t);
+                    log.error("Error caught notifying listener of event [{}], remote address [{}]", event, address, t);
                 }
             }
             if (option().performance()) {
@@ -239,26 +239,26 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
      * {@inheritDoc}
      */
     @Override
-    public void handleDisconnectNotice(String addr) {
-        log.info("Disconnected[{}] ...", addr);
+    public void handleDisconnectNotice(String address) {
+        log.info("Disconnected[{}] ...", address);
     }
 
     /**
      * <p>getAuthedHandler.</p>
      *
-     * @param addr a {@link java.lang.String} object.
+     * @param address a {@link java.lang.String} object.
      * @return a {@link link.thingscloud.freeswitch.esl.inbound.handler.InboundChannelHandler} object.
      */
-    public InboundChannelHandler getAuthedHandler(String addr) {
-        InboundChannelHandler handler = handlerTable.get(addr);
+    public InboundChannelHandler getAuthedHandler(String address) {
+        InboundChannelHandler handler = handlerTable.get(address);
         if (handler == null) {
-            throw new InboundClientException("not found inbound handler for addr : " + addr);
+            throw new InboundClientException("not found inbound handler for address : " + address);
         }
         List<ServerOption> serverOptions = option().serverOptions();
         for (ServerOption serverOption : serverOptions) {
-            if (StringUtils.equals(serverOption.addr(), addr)) {
+            if (StringUtils.equals(serverOption.address(), address)) {
                 if (serverOption.state() != ConnectState.AUTHED) {
-                    throw new InboundClientException("inbound handler is not authed for addr : " + addr);
+                    throw new InboundClientException("inbound handler is not authed for address : " + address);
                 }
                 break;
             }
@@ -293,12 +293,12 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
                 for (String event : list) {
                     sb.append(event).append(" ");
                 }
-                option().serverOptions().forEach(serverOption -> publicExecutor.execute(() -> setEventSubscriptions(serverOption.addr(), "plain", sb.toString())));
+                option().serverOptions().forEach(serverOption -> publicExecutor.execute(() -> setEventSubscriptions(serverOption.address(), "plain", sb.toString())));
             }
 
             @Override
             public void cancelEvents() {
-                option().serverOptions().forEach(serverOption -> publicExecutor.execute(() -> cancelEventSubscriptions(serverOption.addr())));
+                option().serverOptions().forEach(serverOption -> publicExecutor.execute(() -> cancelEventSubscriptions(serverOption.address())));
 
             }
         });
@@ -324,7 +324,7 @@ abstract class AbstractInboundClient extends AbstractNettyInboundClient implemen
         log.info("doClose remote server [{}:{}] success.", serverOption.host(), serverOption.port());
         serverOption.state(ConnectState.CLOSING);
         option().serverOptions().remove(serverOption);
-        String remoteAddr = serverOption.addr();
+        String remoteAddr = serverOption.address();
         InboundChannelHandler inboundChannelHandler = handlerTable.get(remoteAddr);
         if (inboundChannelHandler != null) {
             inboundChannelHandler.close().addListener((ChannelFutureListener) future -> {

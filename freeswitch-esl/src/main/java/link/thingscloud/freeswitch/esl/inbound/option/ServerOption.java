@@ -40,11 +40,11 @@ public class ServerOption {
     private int connectTimes = 0;
 
     /**
-     * <p>addr.</p>
+     * <p>address.</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String addr() {
+    public String address() {
         return host + ":" + port;
     }
 
