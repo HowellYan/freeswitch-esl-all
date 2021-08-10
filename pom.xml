@@ -36,6 +36,7 @@
         <module>freeswitch-esl-example</module>
         <module>freeswitch-esl-spring-boot-starter</module>
         <module>freeswitch-esl-spring-boot-starter-example</module>
+        <module>opensip-event</module>
     </modules>
 
     <properties>
