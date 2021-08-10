@@ -17,6 +17,7 @@
 
 package link.thingscloud.freeswitch.esl.spring.boot.starter.example;
 
+import com.alibaba.nacos.spring.context.annotation.discovery.EnableNacosDiscovery;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
