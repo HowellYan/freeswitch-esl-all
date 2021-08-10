@@ -1,6 +1,7 @@
 package link.thingscloud.freeswitch.esl.spring.boot.starter.example.handler;
 
 import link.thingscloud.freeswitch.esl.constant.EventNames;
+import link.thingscloud.freeswitch.esl.helper.EslHelper;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
@@ -16,6 +17,6 @@ public class ChannelCreateHandler implements EslEventHandler {
      */
     @Override
     public void handle(String address, EslEvent event) {
-        log.info("HeartbeatEslEventHandler handle address[{}] EslEvent[{}].", address, event);
+        log.info("address[{}] EslEvent[{}]", address, EslHelper.formatEslEvent(event));
     }
 }
