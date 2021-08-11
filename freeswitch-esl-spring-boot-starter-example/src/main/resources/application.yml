@@ -15,6 +15,11 @@
 #              timeoutSeconds: 5
 #          events:
 #            - all
+#        outbound:
+#          servers:
+#            - host: 192.168.10.116
+#              port: 8082
+#
 #logging:
 #  level:
 #    link: INFO

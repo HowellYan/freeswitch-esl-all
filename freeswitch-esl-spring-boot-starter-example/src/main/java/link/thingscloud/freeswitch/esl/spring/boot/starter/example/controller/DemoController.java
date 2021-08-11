@@ -88,4 +88,9 @@ public class DemoController {
         return inboundClient.option().serverOptions().toString();
     }
 
+    @GetMapping("/call")
+    public String call() {
+        return inboundClient.bridge("sip:1004@192.168.10.109","","");
+    }
+
 }

@@ -19,11 +19,16 @@ package link.thingscloud.freeswitch.esl.spring.boot.starter.config;
 
 import link.thingscloud.freeswitch.esl.IEslEventListener;
 import link.thingscloud.freeswitch.esl.InboundClient;
+import link.thingscloud.freeswitch.esl.OutboundClient;
 import link.thingscloud.freeswitch.esl.ServerConnectionListener;
 import link.thingscloud.freeswitch.esl.inbound.option.InboundClientOption;
+import link.thingscloud.freeswitch.esl.outbound.option.OutboundClientOption;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.InboundClientOptionHandler;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.OutboundClientOptionHandler;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.InboundClientProperties;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.OutboundClientProperties;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.template.DefaultInboundClientOptionHandlerTemplate;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.template.DefaultOutboundClientOptionHandlerTemplate;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.template.IEslEventListenerTemplate;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.template.ServerConnectionListenerTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +48,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @Slf4j
 @Configuration
-@EnableConfigurationProperties({InboundClientProperties.class})
-@ConditionalOnClass(InboundClient.class)
+@EnableConfigurationProperties({InboundClientProperties.class, OutboundClientProperties.class})
+@ConditionalOnClass({InboundClient.class, OutboundClient.class})
 public class FreeswitchEslAutoConfiguration {
 
     /**
@@ -56,6 +61,17 @@ public class FreeswitchEslAutoConfiguration {
     @ConditionalOnMissingBean(InboundClientOptionHandler.class)
     public InboundClientOptionHandler inboundClientOptionHandler() {
         return new DefaultInboundClientOptionHandlerTemplate();
+    }
+
+    /**
+     * <p>inboundClientPropertiesHandler.</p>
+     *
+     * @return a {@link link.thingscloud.freeswitch.esl.spring.boot.starter.handler.InboundClientOptionHandler} object.
+     */
+    @Bean
+    @ConditionalOnMissingBean(OutboundClientOptionHandler.class)
+    public OutboundClientOptionHandler outboundClientOptionHandler() {
+        return new DefaultOutboundClientOptionHandlerTemplate();
     }
 
     /**
@@ -95,6 +111,21 @@ public class FreeswitchEslAutoConfiguration {
         log.info("inboundClient properties : [{}]", option);
         log.info("inboundClient option : [{}]", option);
         return InboundClient.newInstance(option);
+    }
+
+    /**
+     * <p>inboundClient.</p>
+     *
+     * @param outboundClientOptionHandler a {@link link.thingscloud.freeswitch.esl.spring.boot.starter.handler.InboundClientOptionHandler} object.
+     * @return a {@link link.thingscloud.freeswitch.esl.InboundClient} object.
+     */
+    @Bean(initMethod = "start", destroyMethod = "shutdown")
+    @ConditionalOnMissingBean(OutboundClient.class)
+    public OutboundClient outboundClient(@Autowired OutboundClientOptionHandler outboundClientOptionHandler) {
+        OutboundClientOption option = outboundClientOptionHandler.getOption();
+        log.info("outboundClient properties : [{}]", option);
+        log.info("outboundClient option : [{}]", option);
+        return OutboundClient.newInstance(option);
     }
 
 }

@@ -4,12 +4,16 @@ import com.alibaba.nacos.api.annotation.NacosInjected;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import link.thingscloud.freeswitch.esl.InboundClient;
 import link.thingscloud.freeswitch.esl.constant.EventNames;
 import link.thingscloud.freeswitch.esl.helper.EslHelper;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
+import link.thingscloud.freeswitch.esl.transport.SendMsg;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
+import link.thingscloud.freeswitch.esl.util.EslEventUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,11 +28,31 @@ public class ChannelCreateHandler implements EslEventHandler {
     @NacosInjected
     private NamingService namingService;
 
+    @Autowired
+    private InboundClient inboundClient;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void handle(String address, EslEvent event) {
+        // Caller-Unique-ID
+        SendMsg sendMsg = new SendMsg(EslEventUtil.getCallerUniqueId(event));
+//        sendMsg.addCallCommand("execute");
+//        sendMsg.addExecuteAppName("set");
+//        sendMsg.addExecuteAppArg("charge_state=WAIT_ACCOUNT");
+//        inboundClient.sendMessage(address, sendMsg);
+
+        sendMsg.addCallCommand("execute");
+        sendMsg.addExecuteAppName("bridge");
+        sendMsg.addExecuteAppArg("sofia/external/" + EslEventUtil.getSipToUri(event));
+        inboundClient.sendMessage(address, sendMsg);
+
+        sendMsg.addCallCommand("execute");
+        sendMsg.addExecuteAppName("socket");
+        sendMsg.addExecuteAppArg("192.168.10.116:8081 async full");
+        inboundClient.sendMessage(address, sendMsg);
+
         try {
             // 根据服务名从注册中心获取一个健康的服务实例
             Instance instance = namingService.selectOneHealthyInstance("fs-esl");

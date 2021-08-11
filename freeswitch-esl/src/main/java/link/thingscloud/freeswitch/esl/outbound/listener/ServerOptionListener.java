@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.handler;
+package link.thingscloud.freeswitch.esl.outbound.listener;
 
-import link.thingscloud.freeswitch.esl.InboundClient;
-import link.thingscloud.freeswitch.esl.OutboundClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import link.thingscloud.freeswitch.esl.outbound.option.ServerOption;
 
 /**
- * <p>Abstract AbstractEslEventHandler class.</p>
+ * <p>ServerOptionListener interface.</p>
  *
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  * @version 1.0.0
  */
-public abstract class AbstractEslEventHandler implements EslEventHandler {
+public interface ServerOptionListener {
 
-    @Autowired
-    protected InboundClient inboundClient;
+    /**
+     * <p>onAdded.</p>
+     *
+     * @param serverOption a {@link ServerOption} object.
+     */
+    void onAdded(ServerOption serverOption);
 
-    @Autowired
-    protected OutboundClient outboundClient;
-
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    /**
+     * <p>onRemoved.</p>
+     *
+     * @param serverOption a {@link ServerOption} object.
+     */
+    void onRemoved(ServerOption serverOption);
 
 }

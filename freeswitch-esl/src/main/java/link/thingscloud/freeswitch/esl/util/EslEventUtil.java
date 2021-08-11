@@ -59,6 +59,7 @@ public class EslEventUtil {
     public static final String CALLER_CHANNEL_TRANSFER_TIME = "Caller-Channel-Transfer-Time";
     public static final String CALLER_CHANNEL_RESURRECT_TIME = "Caller-Channel-Resurrect-Time";
 
+    public static final String VARIABLE_SIP_TO_URI = "variable_sip_to_uri";
 
     private EslEventUtil() {
     }
@@ -221,5 +222,9 @@ public class EslEventUtil {
 
     public static String getCallerOrigCallerIdNumber(EslEvent event) {
         return event.getEventHeaders().get(CALLER_ORIG_CALLER_ID_NUMBER);
+    }
+
+    public static String getSipToUri(EslEvent event) {
+        return event.getEventHeaders().get(VARIABLE_SIP_TO_URI);
     }
 }

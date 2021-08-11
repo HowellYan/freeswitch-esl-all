@@ -15,28 +15,43 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.handler;
+package link.thingscloud.freeswitch.esl.outbound.option;
 
-import link.thingscloud.freeswitch.esl.InboundClient;
-import link.thingscloud.freeswitch.esl.OutboundClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
- * <p>Abstract AbstractEslEventHandler class.</p>
+ * <p>ServerOption class.</p>
  *
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  * @version 1.0.0
  */
-public abstract class AbstractEslEventHandler implements EslEventHandler {
 
-    @Autowired
-    protected InboundClient inboundClient;
+@Data
+@Accessors(fluent = true)
+public class ServerOption {
+    private final String host;
+    private final int port;
+    private int timeoutSeconds;
+    private String password;
 
-    @Autowired
-    protected OutboundClient outboundClient;
+    private ConnectState state = ConnectState.INIT;
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private int connectTimes = 0;
 
+    /**
+     * <p>address.</p>
+     *
+     * @return a {@link String} object.
+     */
+    public String address() {
+        return host + ":" + port;
+    }
+
+    /**
+     * <p>addConnectTimes.</p>
+     */
+    public void addConnectTimes() {
+        connectTimes++;
+    }
 }

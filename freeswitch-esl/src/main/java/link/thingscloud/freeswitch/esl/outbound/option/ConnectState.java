@@ -15,28 +15,49 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.handler;
-
-import link.thingscloud.freeswitch.esl.InboundClient;
-import link.thingscloud.freeswitch.esl.OutboundClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+package link.thingscloud.freeswitch.esl.outbound.option;
 
 /**
- * <p>Abstract AbstractEslEventHandler class.</p>
+ * <p>ConnectState class.</p>
  *
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  * @version 1.0.0
  */
-public abstract class AbstractEslEventHandler implements EslEventHandler {
-
-    @Autowired
-    protected InboundClient inboundClient;
-
-    @Autowired
-    protected OutboundClient outboundClient;
-
-    protected final Logger log = LoggerFactory.getLogger(getClass());
-
+public enum ConnectState {
+    /**
+     * 初始化状态
+     */
+    INIT,
+    /**
+     * 正在连接
+     */
+    CONNECTING,
+    /**
+     * 连接失败
+     */
+    FAILED,
+    /**
+     * 连接成功
+     */
+    CONNECTED,
+    /**
+     * 认证成功
+     */
+    AUTHED,
+    /**
+     * 认证失败
+     */
+    AUTHED_FAILED,
+    /**
+     * 正在关闭连接
+     */
+    CLOSING,
+    /**
+     * 连接已关闭
+     */
+    CLOSED,
+    /**
+     * 应用已停止
+     */
+    SHUTDOWN
 }

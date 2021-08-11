@@ -6,7 +6,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -18,15 +18,12 @@ import java.net.InetSocketAddress;
 /**
  * todo 测试
  */
-
-public class UdpServer {
+@Slf4j
+public class UdpServer2  {
 
     //如果不设置超时，连接会一直占用本地线程，端口，连接客户端一多，会导致本地端口用尽及CPU压力
     private final int timeout = 5;
 
-
-
-    @Async
     public void start() {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
@@ -38,16 +35,17 @@ public class UdpServer {
             b.group(group)
                     .channel(NioDatagramChannel.class)
                     .option(ChannelOption.SO_BROADCAST, true)
-                    .handler(new UdpServerHandler());
+                    .handler(new UdpServerHandler2());
             //获取配置文件中的主机、端口
             String host = "192.168.10.116";
-            int port = 8081;
+            int port = 8082;
             InetSocketAddress addr = new InetSocketAddress(host, port);
             Channel channel = b.bind(addr).sync().channel();
-            System.out.println("UdpServer start success on " + port);
+            System.out.println("UdpServer start success on2 " + port);
             channel.closeFuture().await();
         } catch (Exception e) {
             e.printStackTrace();
+            log.error("", e);
         } finally {
             group.shutdownGracefully();
         }
