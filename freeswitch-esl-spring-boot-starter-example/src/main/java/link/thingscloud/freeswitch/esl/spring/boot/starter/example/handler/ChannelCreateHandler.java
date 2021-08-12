@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- *
+ * todo FS --> [Inbound] --> app --> [sendMsg] --> socket address
+ * todo FS <--> [Outbound] <--> app
+ * todo 分布式锁
  * @author th158
  */
 @Slf4j
@@ -43,20 +45,23 @@ public class ChannelCreateHandler implements EslEventHandler {
 //        sendMsg.addExecuteAppArg("charge_state=WAIT_ACCOUNT");
 //        inboundClient.sendMessage(address, sendMsg);
 
-        sendMsg.addCallCommand("execute");
-        sendMsg.addExecuteAppName("bridge");
-        sendMsg.addExecuteAppArg("sofia/external/" + EslEventUtil.getSipToUri(event));
-        inboundClient.sendMessage(address, sendMsg);
+//        sendMsg.addCallCommand("execute");
+//        sendMsg.addExecuteAppName("bridge");
+//        sendMsg.addExecuteAppArg("sofia/external/" + EslEventUtil.getSipToUri(event));
+//        inboundClient.sendMessage(address, sendMsg);
 
-        sendMsg.addCallCommand("execute");
-        sendMsg.addExecuteAppName("socket");
-        sendMsg.addExecuteAppArg("192.168.10.116:8081 async full");
-        inboundClient.sendMessage(address, sendMsg);
+
 
         try {
             // 根据服务名从注册中心获取一个健康的服务实例
             Instance instance = namingService.selectOneHealthyInstance("fs-esl");
             log.info(" ip [{}] port [{}]", instance.getIp(), instance.getPort());
+            // 向fs发送 socket 信息
+            sendMsg.addCallCommand("execute");
+            sendMsg.addExecuteAppName("socket");
+            sendMsg.addExecuteAppArg( instance.getIp() + ":8081 async full");
+            inboundClient.sendMessage(address, sendMsg);
+
         } catch (NacosException e) {
             e.printStackTrace();
         }

@@ -18,6 +18,7 @@
 package link.thingscloud.freeswitch.esl;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
 import link.thingscloud.freeswitch.esl.exception.InboundTimeoutExcetion;
 import link.thingscloud.freeswitch.esl.outbound.option.OutboundClientOption;
 import link.thingscloud.freeswitch.esl.transport.CommandResponse;
@@ -65,7 +66,7 @@ public interface OutboundClient extends OutboundClientService, OutboundClientCom
      * 获取 netty bootstrap
      * @return
      */
-    Bootstrap bootstrap();
+    ServerBootstrap bootstrap();
 
     /**
      * Sends a FreeSWITCH API command to the server and blocks, waiting for an immediate response from the

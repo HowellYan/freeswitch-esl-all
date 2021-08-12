@@ -39,6 +39,7 @@ public class OutboundClientOption {
     private int sndBufSize = 65535;
     private int rcvBufSize = 65535;
 
+    private int parentGroupThread = Runtime.getRuntime().availableProcessors() * 2;
     private int workerGroupThread = Runtime.getRuntime().availableProcessors() * 2;
     private int publicExecutorThread = Runtime.getRuntime().availableProcessors() * 2;
     private int callbackExecutorThread = Runtime.getRuntime().availableProcessors() * 2;
@@ -123,6 +124,14 @@ public class OutboundClientOption {
     public OutboundClientOption workerGroupThread(int workerGroupThread) {
         this.workerGroupThread = workerGroupThread;
         return this;
+    }
+
+    public int parentGroupThread() {
+        return parentGroupThread;
+    }
+
+    public void setParentGroupThread(int parentGroupThread) {
+        this.parentGroupThread = parentGroupThread;
     }
 
     /**

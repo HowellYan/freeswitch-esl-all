@@ -30,7 +30,7 @@ public interface OutboundClientService {
     /**
      * <p>start.</p>
      */
-    ChannelFuture start();
+    void start();
 
     /**
      * <p>shutdown.</p>

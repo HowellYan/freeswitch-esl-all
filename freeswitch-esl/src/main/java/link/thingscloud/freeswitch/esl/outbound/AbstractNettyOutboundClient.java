@@ -17,14 +17,14 @@
 
 package link.thingscloud.freeswitch.esl.outbound;
 
+import com.google.common.util.concurrent.AbstractService;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -33,8 +33,11 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import link.thingscloud.freeswitch.esl.OutboundClientService;
 import link.thingscloud.freeswitch.esl.outbound.handler.OutboundChannelHandler;
 import link.thingscloud.freeswitch.esl.outbound.listener.ChannelEventListener;
+import link.thingscloud.freeswitch.esl.outbound.option.ConnectState;
 import link.thingscloud.freeswitch.esl.outbound.option.OutboundClientOption;
+import link.thingscloud.freeswitch.esl.outbound.option.ServerOption;
 import link.thingscloud.freeswitch.esl.transport.message.EslFrameDecoder;
+import link.thingscloud.freeswitch.esl.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +47,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 /**
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  */
-abstract class AbstractNettyOutboundClient implements ChannelEventListener, OutboundClientService {
+abstract class AbstractNettyOutboundClient extends AbstractService implements ChannelEventListener, OutboundClientService {
 
-    final Bootstrap bootstrap;
+    final ServerBootstrap bootstrap;
     final EventLoopGroup workerGroup;
+    final EventLoopGroup parentGroup;
     final ExecutorService publicExecutor;
-
     final OutboundClientOption option;
 
     final Logger log = LoggerFactory.getLogger(getClass());
@@ -57,24 +60,25 @@ abstract class AbstractNettyOutboundClient implements ChannelEventListener, Outb
     AbstractNettyOutboundClient(OutboundClientOption option) {
         this.option = option;
 
-        bootstrap = new Bootstrap();
+        bootstrap = new ServerBootstrap();
 
         publicExecutor = new ScheduledThreadPoolExecutor(option.publicExecutorThread(),
-                new DefaultThreadFactory("publicExecutor", true));
-
+                new DefaultThreadFactory("Outbound-Executor", true));
+        parentGroup = new NioEventLoopGroup(option.parentGroupThread());
         workerGroup = new NioEventLoopGroup(option.workerGroupThread());
-        bootstrap.group(workerGroup)
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.SO_KEEPALIVE, false)
-                .option(ChannelOption.SO_SNDBUF, option.sndBufSize())
-                .option(ChannelOption.SO_RCVBUF, option.rcvBufSize())
-                .handler(new ChannelInitializer<SocketChannel>() {
+        bootstrap.group(parentGroup, workerGroup)
+                .channel(NioServerSocketChannel.class)
+                .childOption(ChannelOption.TCP_NODELAY, true)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childOption(ChannelOption.SO_SNDBUF, option.sndBufSize())
+                .childOption(ChannelOption.SO_RCVBUF, option.rcvBufSize())
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast("encoder", new StringEncoder());
-                        pipeline.addLast("decoder", new EslFrameDecoder(8192));
+                        pipeline.addLast("decoder", new EslFrameDecoder(8192, true));
                         if (option.readerIdleTimeSeconds() > 0 && option.readTimeoutSeconds() > 0
                                 && option.readerIdleTimeSeconds() < option.readTimeoutSeconds()) {
                             pipeline.addLast("idleState", new IdleStateHandler(option.readerIdleTimeSeconds(), 0, 0));
@@ -84,6 +88,22 @@ abstract class AbstractNettyOutboundClient implements ChannelEventListener, Outb
                         pipeline.addLast("clientHandler", new OutboundChannelHandler(AbstractNettyOutboundClient.this, publicExecutor, option.disablePublicExecutor()));
                     }
                 });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void start() {
+        this.startAsync();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void shutdown() {
+       this.stopAsync();
     }
 
 }

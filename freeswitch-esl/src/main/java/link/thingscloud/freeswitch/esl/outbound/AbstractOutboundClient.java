@@ -19,6 +19,7 @@ package link.thingscloud.freeswitch.esl.outbound;
 
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -78,49 +79,14 @@ abstract class AbstractOutboundClient extends AbstractNettyOutboundClient implem
     }
 
     @Override
-    public Bootstrap bootstrap() {
+    public ServerBootstrap bootstrap() {
         return bootstrap;
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ChannelFuture start() {
-        log.info("outbound client will start ...");
-        // todo 只获取 第一个配置
-        if (option() != null && option().serverOptions().size() > 0) {
-            ServerOption serverOption = option().serverOptions().get(0);
-            if (serverOption.state() == ConnectState.INIT) {
-                serverOption.state(ConnectState.CONNECTING);
-                return doBind(serverOption);
-            }
-        }
-        return null;
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void shutdown() {
-        log.info("outbound client will shutdown ...");
-        option().serverOptions().forEach(serverOption -> {
-            serverOption.state(ConnectState.SHUTDOWN);
-            OutboundChannelHandler outboundChannelHandler = handlerTable.get(serverOption.address());
-            if (outboundChannelHandler != null) {
-                outboundChannelHandler.close().addListener((ChannelFutureListener) future -> {
-                    if (future.isSuccess()) {
-                        log.info("shutdown outbound client remote server [{}:{}] success.", serverOption.host(), serverOption.port());
-                    } else {
-                        log.info("shutdown outbound client remote server [{}:{}] failed, cause : ", serverOption.host(), serverOption.port(), future.cause());
-                    }
-                });
-            }
-        });
-        workerGroup.shutdownGracefully();
-    }
+
+
     
     /**
      * {@inheritDoc}
@@ -239,24 +205,7 @@ abstract class AbstractOutboundClient extends AbstractNettyOutboundClient implem
     }
 
     
-    private ChannelFuture doBind(final ServerOption serverOption) {
-        log.info("start bind server [{}:{}] ...", serverOption.host(), serverOption.port());
-        serverOption.addConnectTimes();
-        serverOption.state(ConnectState.CONNECTING);
 
-        ChannelFuture channelFuture;
-        if (StringUtils.isBlank(serverOption.host())) {
-            channelFuture = bootstrap.bind(serverOption.port()).syncUninterruptibly();
-        } else {
-            channelFuture = bootstrap.bind(serverOption.host(), serverOption.port()).syncUninterruptibly();
-        }
-        if (channelFuture != null && channelFuture.isSuccess()) {
-            log.info("outbound client server start success, listen port on {}", serverOption.port());
-        } else {
-            log.info("outbound client server start fail");
-        }
-        return channelFuture;
-    }
 
     private void doClose(ServerOption serverOption) {
         log.info("doClose remote server [{}:{}] success.", serverOption.host(), serverOption.port());
