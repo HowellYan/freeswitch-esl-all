@@ -22,10 +22,12 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import link.thingscloud.freeswitch.esl.OutboundClient;
 import link.thingscloud.freeswitch.esl.constant.EslConstant;
 import link.thingscloud.freeswitch.esl.exception.InboundClientException;
+import link.thingscloud.freeswitch.esl.outbound.handler.Context;
 import link.thingscloud.freeswitch.esl.outbound.handler.OutboundChannelHandler;
 import link.thingscloud.freeswitch.esl.outbound.listener.EventListener;
 import link.thingscloud.freeswitch.esl.outbound.listener.ServerOptionListener;
@@ -87,85 +89,21 @@ abstract class AbstractOutboundClient extends AbstractNettyOutboundClient implem
      * {@inheritDoc}
      */
     @Override
-    public void handleAuthRequest(String address, OutboundChannelHandler outboundChannelHandler) {
-        log.info("Auth requested[{}], sending [auth {}]", address, "*****");
-        for (ServerOption serverOption : option().serverOptions()) {
-            String password = serverOption.password();
-            if (password == null) {
-                password = option().defaultPassword();
-            }
-            if (StringUtils.equals(address, serverOption.address())) {
-                EslMessage response = outboundChannelHandler.sendSyncSingleLineCommand("auth " + password);
-                log.debug("Auth response [{}]", response);
-                if (response.getContentType().equals(EslHeaders.Value.COMMAND_REPLY)) {
-                    CommandResponse reply = new CommandResponse("auth " + password, response);
-                    serverOption.state(ConnectState.AUTHED);
-                    log.info("Auth response success={}, message=[{}]", reply.isOk(), reply.getReplyText());
-                    if (!option().events().isEmpty()) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String event : option().events()) {
-                            sb.append(event).append(" ");
-                        }
-                        setEventSubscriptions(address, "plain", sb.toString());
-                    }
-                } else {
-                    serverOption.state(ConnectState.AUTHED_FAILED);
-                    log.error("Bad auth response message [{}]", response);
-                    throw new IllegalStateException("Incorrect auth response");
-                }
-            }
-        }
+    public void handleAuthRequest(ChannelHandlerContext ctx) {
+        log.info("Auth requested[{}], sending [auth {}]", ctx, "*****");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handleEslEvent(String address, EslEvent event) {
-        option().listeners().forEach(listener -> {
-            long start = 0L;
-            if (option().performance()) {
-                start = System.currentTimeMillis();
-            }
-            if (option().eventPerformance()) {
-                long cost = 0L;
-                if (start > 0L) {
-                    cost = start - (event.getEventDateTimestamp() / 1000);
-                } else {
-                    cost = System.currentTimeMillis() - (event.getEventDateTimestamp() / 1000);
-                }
-                if (cost > option().eventPerformanceCostTime()) {
-                    log.warn("[event performance] received esl event diff time : {}ms, event is blocked.", cost);
-                }
-            }
-            log.debug("Event address[{}] received [{}]", address, event);
-            /*
-             *  Notify listeners in a different thread in order to:
-             *    - not to block the IO threads with potentially long-running listeners
-             *    - generally be defensive running other people's code
-             *  Use a different worker thread pool for async job results than for event driven
-             *  events to keep the latency as low as possible.
-             */
-            if (StringUtils.equals(event.getEventName(), EslConstant.BACKGROUND_JOB)) {
-                try {
-                    listener.backgroundJobResultReceived(address, event);
-                } catch (Throwable t) {
-                    log.error("Error caught notifying listener of job result [{}], remote address [{}]", event, address, t);
-                }
-            } else {
-                try {
-                    listener.eventReceived(address, event);
-                } catch (Throwable t) {
-                    log.error("Error caught notifying listener of event [{}], remote address [{}]", event, address, t);
-                }
-            }
-            if (option().performance()) {
-                long cost = System.currentTimeMillis() - start;
-                if (cost >= option().performanceCostTime()) {
-                    log.warn("[performance] handle esl event cost time : {}ms", cost);
-                }
-            }
-        });
+    public void handleEslEvent(Context context, EslEvent eslEvent) {
+        this.option().listeners().forEach(listener -> listener.handleEslEvent(context, eslEvent));
+    }
+
+    @Override
+    public void onConnect(Context context, EslEvent eslEvent) {
+        this.option().listeners().forEach(listener -> listener.onConnect(context, eslEvent));
     }
 
     /**

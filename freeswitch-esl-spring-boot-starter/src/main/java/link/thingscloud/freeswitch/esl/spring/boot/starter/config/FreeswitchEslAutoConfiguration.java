@@ -17,21 +17,16 @@
 
 package link.thingscloud.freeswitch.esl.spring.boot.starter.config;
 
-import link.thingscloud.freeswitch.esl.IEslEventListener;
-import link.thingscloud.freeswitch.esl.InboundClient;
-import link.thingscloud.freeswitch.esl.OutboundClient;
-import link.thingscloud.freeswitch.esl.ServerConnectionListener;
+import link.thingscloud.freeswitch.esl.*;
 import link.thingscloud.freeswitch.esl.inbound.option.InboundClientOption;
 import link.thingscloud.freeswitch.esl.outbound.option.OutboundClientOption;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.InboundClientOptionHandler;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.OutboundClientOptionHandler;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.InboundClientProperties;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.OutboundClientProperties;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.template.DefaultInboundClientOptionHandlerTemplate;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.template.DefaultOutboundClientOptionHandlerTemplate;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.template.IEslEventListenerTemplate;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.template.ServerConnectionListenerTemplate;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.template.*;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -85,6 +80,14 @@ public class FreeswitchEslAutoConfiguration {
         return new IEslEventListenerTemplate();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(OutboundEventListener.class)
+    public OutboundEventListener outboundEventListener() {
+//        OutboundEventListenerTemplate outboundEventListenerTemplate = new OutboundEventListenerTemplate();
+//        outboundClient.option().addListener(outboundEventListenerTemplate);
+        return new OutboundEventListenerTemplate();
+    }
+
     /**
      * <p>serverConnectionListener.</p>
      *
@@ -121,9 +124,10 @@ public class FreeswitchEslAutoConfiguration {
      */
     @Bean(initMethod = "start", destroyMethod = "shutdown")
     @ConditionalOnMissingBean(OutboundClient.class)
-    public OutboundClient outboundClient(@Autowired OutboundClientOptionHandler outboundClientOptionHandler) {
+    public OutboundClient outboundClient(@Autowired OutboundClientOptionHandler outboundClientOptionHandler, @Autowired OutboundEventListener outboundEventListener) {
         OutboundClientOption option = outboundClientOptionHandler.getOption();
-        log.info("outboundClient properties : [{}]", option);
+        option.addListener(outboundEventListener);
+        option.eventListener();
         log.info("outboundClient option : [{}]", option);
         return OutboundClient.newInstance(option);
     }

@@ -26,12 +26,13 @@ import io.netty.handler.timeout.IdleStateEvent;
 import link.thingscloud.freeswitch.esl.helper.EslHelper;
 import link.thingscloud.freeswitch.esl.outbound.listener.ChannelEventListener;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
+import link.thingscloud.freeswitch.esl.transport.event.EslEventHeaderNames;
 import link.thingscloud.freeswitch.esl.transport.message.EslHeaders;
 import link.thingscloud.freeswitch.esl.transport.message.EslMessage;
+import link.thingscloud.freeswitch.esl.util.RemotingUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -58,6 +59,8 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
             new ConcurrentHashMap<>();
     private final ExecutorService backgroundJobExecutor = Executors.newCachedThreadPool();
     private final boolean isTraceEnabled = log.isTraceEnabled();
+    private final ConcurrentLinkedQueue<CompletableFuture<EslMessage>> apiCalls =
+            new ConcurrentLinkedQueue<>();
     private Channel channel;
     private String remoteAddr;
 
@@ -81,9 +84,21 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.channel = ctx.channel();
-        //this.remoteAddr = RemotingUtil.socketAddress2String(channel.remoteAddress());
-        log.info("channelActive remoteAddr : {}", ctx);
-//        listener.onChannelActive(remoteAddr, this);
+        this.remoteAddr = RemotingUtil.socketAddress2String(channel.remoteAddress());
+
+        sendApiSingleLineCommand(ctx.channel(), "connect")
+                .thenAcceptAsync(response -> {
+                    log.info("{}", listener);
+                    listener.onConnect(
+                            new Context(ctx.channel(), OutboundChannelHandler.this),
+                            new EslEvent(response, true));
+                }, publicExecutor)
+                .exceptionally(throwable -> {
+                    log.error("Outbound Error", throwable);
+                    ctx.channel().close();
+                    listener.handleDisconnectNotice(remoteAddr);
+                    return null;
+                });
     }
 
     /**
@@ -115,60 +130,78 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("exceptionCaught remoteAddr : {}, cause : ", remoteAddr, cause);
+
+        for (final CompletableFuture<EslMessage> apiCall : apiCalls) {
+            apiCall.completeExceptionally(cause.getCause());
+        }
+
+        for (final CompletableFuture<EslEvent> backgroundJob : backgroundJobs.values()) {
+            backgroundJob.completeExceptionally(cause.getCause());
+        }
+
+        ctx.close();
+
+        ctx.fireExceptionCaught(cause);
     }
+
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, EslMessage msg) {
-
-        log.info("channelRead0 esl message : {}", EslHelper.formatEslMessage(msg));
-
-        String contentType = msg.getContentType();
+    protected void channelRead0(ChannelHandlerContext ctx, EslMessage message) throws Exception {
+        final String contentType = message.getContentType();
+        log.info("contentType : {}", contentType);
         if (contentType.equals(EslHeaders.Value.TEXT_EVENT_PLAIN) ||
-                contentType.equals(EslHeaders.Value.TEXT_EVENT_XML)) {
+                contentType.equals(EslHeaders.Value.TEXT_EVENT_XML)
+        ) {
             //  transform into an event
-            EslEvent eslEvent = new EslEvent(msg);
-            handleEslEvent(eslEvent);
+            final EslEvent eslEvent = new EslEvent(message);
+            if (eslEvent.getEventName().equals("BACKGROUND_JOB")) {
+                final String backgroundUuid = eslEvent.getEventHeaders().get(EslEventHeaderNames.JOB_UUID);
+                final CompletableFuture<EslEvent> future = backgroundJobs.remove(backgroundUuid);
+                if (null != future) {
+                    future.complete(eslEvent);
+                }
+            } else {
+                listener.handleEslEvent(new Context(ctx.channel(), OutboundChannelHandler.this), eslEvent);
+            }
         } else {
-            handleEslMessage(msg);
+            handleEslMessage(ctx, message);
         }
     }
 
-    private void handleEslMessage(EslMessage message) {
-        log.debug("Received message: [{}]", message);
-        String contentType = message.getContentType();
+    protected void handleEslMessage(ChannelHandlerContext ctx, EslMessage message) {
+        // log.info("Received message: [{}]", message);
+        final String contentType = message.getContentType();
+
         switch (contentType) {
             case EslHeaders.Value.API_RESPONSE:
                 log.debug("Api response received [{}]", message);
-                Objects.requireNonNull(syncCallbacks.poll()).handle(message);
+                apiCalls.poll().complete(message);
                 break;
+
             case EslHeaders.Value.COMMAND_REPLY:
                 log.debug("Command reply received [{}]", message);
-                Objects.requireNonNull(syncCallbacks.poll()).handle(message);
+                apiCalls.poll().complete(message);
                 break;
+
             case EslHeaders.Value.AUTH_REQUEST:
-                log.debug("Auth request received [{}]", message);
-                publicExecutor.execute(() -> listener.handleAuthRequest(remoteAddr, this));
+                log.error("Auth request received [{}]", message);
+                listener.handleAuthRequest(ctx);
                 break;
+
             case EslHeaders.Value.TEXT_DISCONNECT_NOTICE:
                 log.debug("Disconnect notice received [{}]", message);
-                publicExecutor.execute(() -> listener.handleDisconnectNotice(remoteAddr));
+                listener.handleDisconnectNotice(remoteAddr);
                 break;
+
             default:
                 log.warn("Unexpected message content type [{}]", contentType);
                 break;
         }
     }
 
-    private void handleEslEvent(EslEvent event) {
-        if (disablePublicExecutor) {
-            listener.handleEslEvent(remoteAddr, event);
-        } else {
-            publicExecutor.execute(() -> listener.handleEslEvent(remoteAddr, event));
-        }
-    }
 
     /**
      * Synthesise a synchronous command/response by creating a callback object which is placed in
@@ -190,7 +223,6 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
         } finally {
             syncLock.unlock();
         }
-
         //  Block until the response is available
         return callback.get();
     }
@@ -228,14 +260,15 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     }
 
     public CompletableFuture<EslMessage> sendApiSingleLineCommand(Channel channel, final String command) {
+        final CompletableFuture<EslMessage> future = new CompletableFuture<>();
         syncLock.lock();
         try {
-            final CompletableFuture<EslMessage> future = new CompletableFuture<>();
             channel.writeAndFlush(command + MESSAGE_TERMINATOR);
-            return future;
+            apiCalls.add(future);
         } finally {
             syncLock.unlock();
         }
+        return future;
     }
 
     public CompletableFuture<EslEvent> sendBackgroundApiCommand(Channel channel, final String command) {

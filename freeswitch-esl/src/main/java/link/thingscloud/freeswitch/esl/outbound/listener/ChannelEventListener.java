@@ -17,8 +17,11 @@
 
 package link.thingscloud.freeswitch.esl.outbound.listener;
 
+import io.netty.channel.ChannelHandlerContext;
+import link.thingscloud.freeswitch.esl.outbound.handler.Context;
 import link.thingscloud.freeswitch.esl.outbound.handler.OutboundChannelHandler;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
+import link.thingscloud.freeswitch.esl.transport.message.EslMessage;
 
 /**
  * <p>ChannelEventListener interface.</p>
@@ -29,35 +32,26 @@ import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
 public interface ChannelEventListener {
 
     /**
-     * <p>onChannelActive.</p>
-     *
-     * @param remoteAddr            a {@link String} object.
-     * @param OutboundChannelHandler a {@link OutboundChannelHandler} object.
-     */
-//    void onChannelActive(String remoteAddr, OutboundChannelHandler OutboundChannelHandler);
-
-    /**
-     * <p>onChannelClosed.</p>
-     *
-     * @param remoteAddr a {@link String} object.
-     */
-//    void onChannelClosed(String remoteAddr);
-
-    /**
      * <p>handleAuthRequest.</p>
      *
-     * @param remoteAddr            a {@link String} object.
-     * @param OutboundChannelHandler a {@link OutboundChannelHandler} object.
+     * @param ctx            a {@link ChannelHandlerContext} object.
      */
-    void handleAuthRequest(String remoteAddr, OutboundChannelHandler OutboundChannelHandler);
+    void handleAuthRequest(ChannelHandlerContext ctx);
+
+    /**
+     *
+     * @param context a {@link Context} object.
+     * @param eslEvent a {@link EslEvent} object.
+     */
+    void onConnect(Context context, EslEvent eslEvent);
 
     /**
      * <p>handleEslEvent.</p>
      *
-     * @param remoteAddr a {@link String} object.
-     * @param event      a {@link EslEvent} object.
+     * @param context a {@link String} object.
+     * @param eslEvent      a {@link EslEvent} object.
      */
-    void handleEslEvent(String remoteAddr, EslEvent event);
+    void handleEslEvent(Context context, EslEvent eslEvent);
 
     /**
      * <p>handleDisconnectNotice.</p>

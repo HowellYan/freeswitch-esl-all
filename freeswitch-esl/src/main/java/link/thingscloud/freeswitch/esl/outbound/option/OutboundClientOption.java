@@ -17,7 +17,7 @@
 
 package link.thingscloud.freeswitch.esl.outbound.option;
 
-import link.thingscloud.freeswitch.esl.IEslEventListener;
+import link.thingscloud.freeswitch.esl.OutboundEventListener;
 import link.thingscloud.freeswitch.esl.ServerConnectionListener;
 import link.thingscloud.freeswitch.esl.outbound.listener.EventListener;
 import link.thingscloud.freeswitch.esl.outbound.listener.ServerOptionListener;
@@ -61,7 +61,7 @@ public class OutboundClientOption {
     private final List<ServerOption> serverOptions = new ArrayList<>();
     private final ServerAddrOption serverAddrOption = new ServerAddrOption(serverOptions);
 
-    private final List<IEslEventListener> listeners = new ArrayList<>();
+    private final List<OutboundEventListener> listeners = new ArrayList<>();
 
     private EventListener eventListener = null;
     private final List<String> events = new ArrayList<>();
@@ -458,10 +458,10 @@ public class OutboundClientOption {
     /**
      * <p>addListener.</p>
      *
-     * @param listener a {@link IEslEventListener} object.
+     * @param listener a {@link OutboundEventListener} object.
      * @return a {@link OutboundClientOption} object.
      */
-    public OutboundClientOption addListener(IEslEventListener listener) {
+    public OutboundClientOption addListener(OutboundEventListener listener) {
         listeners.add(listener);
         return this;
     }
@@ -469,10 +469,10 @@ public class OutboundClientOption {
     /**
      * <p>removeListener.</p>
      *
-     * @param listener a {@link IEslEventListener} object.
+     * @param listener a {@link OutboundEventListener} object.
      * @return a {@link OutboundClientOption} object.
      */
-    public OutboundClientOption removeListener(IEslEventListener listener) {
+    public OutboundClientOption removeListener(OutboundEventListener listener) {
         listeners.remove(listener);
         return this;
     }
@@ -482,7 +482,7 @@ public class OutboundClientOption {
      *
      * @return a {@link List} object.
      */
-    public List<IEslEventListener> listeners() {
+    public List<OutboundEventListener> listeners() {
         return listeners;
     }
 
