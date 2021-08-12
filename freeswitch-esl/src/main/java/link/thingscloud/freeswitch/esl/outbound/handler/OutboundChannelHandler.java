@@ -28,15 +28,12 @@ import link.thingscloud.freeswitch.esl.outbound.listener.ChannelEventListener;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
 import link.thingscloud.freeswitch.esl.transport.message.EslHeaders;
 import link.thingscloud.freeswitch.esl.transport.message.EslMessage;
-import link.thingscloud.freeswitch.esl.util.RemotingUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -57,10 +54,12 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     private final ChannelEventListener listener;
     private final ExecutorService publicExecutor;
     private final boolean disablePublicExecutor;
+    private final ConcurrentHashMap<String, CompletableFuture<EslEvent>> backgroundJobs =
+            new ConcurrentHashMap<>();
+    private final ExecutorService backgroundJobExecutor = Executors.newCachedThreadPool();
+    private final boolean isTraceEnabled = log.isTraceEnabled();
     private Channel channel;
     private String remoteAddr;
-
-    private final boolean isTraceEnabled = log.isTraceEnabled();
 
     /**
      * <p>Constructor for OutboundChannelHandler.</p>
@@ -214,7 +213,7 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
         }
         sb.append(LINE_TERMINATOR);
         if (isTraceEnabled) {
-            log.trace("sendSyncMultiLineCommand command : {}", sb.toString());
+            log.trace("sendSyncMultiLineCommand command : {}", sb);
         }
         syncLock.lock();
         try {
@@ -226,6 +225,53 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
 
         //  Block until the response is available
         return callback.get();
+    }
+
+    public CompletableFuture<EslMessage> sendApiSingleLineCommand(Channel channel, final String command) {
+        syncLock.lock();
+        try {
+            final CompletableFuture<EslMessage> future = new CompletableFuture<>();
+            channel.writeAndFlush(command + MESSAGE_TERMINATOR);
+            return future;
+        } finally {
+            syncLock.unlock();
+        }
+    }
+
+    public CompletableFuture<EslEvent> sendBackgroundApiCommand(Channel channel, final String command) {
+
+        return sendApiSingleLineCommand(channel, command)
+                .thenComposeAsync(result -> {
+                    if (result.hasHeader(EslHeaders.Name.JOB_UUID)) {
+                        final String jobId = result.getHeaderValue(EslHeaders.Name.JOB_UUID);
+                        final CompletableFuture<EslEvent> resultFuture = new CompletableFuture<>();
+                        backgroundJobs.put(jobId, resultFuture);
+                        return resultFuture;
+                    } else {
+                        final CompletableFuture<EslEvent> resultFuture = new CompletableFuture<>();
+                        resultFuture.completeExceptionally(new IllegalStateException("Missing Job-UUID header in bgapi response"));
+                        return resultFuture;
+                    }
+                }, backgroundJobExecutor);
+    }
+
+    public CompletableFuture<EslMessage> sendApiMultiLineCommand(Channel channel, final List<String> commandLines) {
+        //  Build command with double line terminator at the end
+        final StringBuilder sb = new StringBuilder();
+        for (final String line : commandLines) {
+            sb.append(line);
+            sb.append(LINE_TERMINATOR);
+        }
+        sb.append(LINE_TERMINATOR);
+        syncLock.lock();
+        try {
+            final CompletableFuture<EslMessage> future = new CompletableFuture<>();
+            channel.write(sb.toString());
+            channel.flush();
+            return future;
+        } finally {
+            syncLock.unlock();
+        }
     }
 
     /**
