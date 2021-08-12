@@ -82,8 +82,8 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.channel = ctx.channel();
-        this.remoteAddr = RemotingUtil.socketAddress2String(channel.remoteAddress());
-        log.debug("channelActive remoteAddr : {}", remoteAddr);
+        //this.remoteAddr = RemotingUtil.socketAddress2String(channel.remoteAddress());
+        log.info("channelActive remoteAddr : {}", ctx);
 //        listener.onChannelActive(remoteAddr, this);
     }
 
@@ -123,9 +123,9 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, EslMessage msg) {
-        if (isTraceEnabled) {
-            log.info("channelRead0 esl message : {}", EslHelper.formatEslMessage(msg));
-        }
+
+        log.info("channelRead0 esl message : {}", EslHelper.formatEslMessage(msg));
+
         String contentType = msg.getContentType();
         if (contentType.equals(EslHeaders.Value.TEXT_EVENT_PLAIN) ||
                 contentType.equals(EslHeaders.Value.TEXT_EVENT_XML)) {

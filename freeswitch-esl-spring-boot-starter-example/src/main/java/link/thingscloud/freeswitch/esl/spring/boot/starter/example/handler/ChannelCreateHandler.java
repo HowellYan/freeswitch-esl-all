@@ -56,11 +56,13 @@ public class ChannelCreateHandler implements EslEventHandler {
             // 根据服务名从注册中心获取一个健康的服务实例
             Instance instance = namingService.selectOneHealthyInstance("fs-esl");
             log.info(" ip [{}] port [{}]", instance.getIp(), instance.getPort());
+
+
             // 向fs发送 socket 信息
-            sendMsg.addCallCommand("execute");
-            sendMsg.addExecuteAppName("socket");
-            sendMsg.addExecuteAppArg( instance.getIp() + ":8081 async full");
-            inboundClient.sendMessage(address, sendMsg);
+//            sendMsg.addCallCommand("execute");
+//            sendMsg.addExecuteAppName("socket");
+//            sendMsg.addExecuteAppArg( instance.getIp() + ":8081 async full");
+//            inboundClient.sendMessage(address, sendMsg);
 
         } catch (NacosException e) {
             e.printStackTrace();

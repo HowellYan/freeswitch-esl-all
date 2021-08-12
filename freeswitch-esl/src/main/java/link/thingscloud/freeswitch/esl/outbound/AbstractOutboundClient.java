@@ -83,11 +83,6 @@ abstract class AbstractOutboundClient extends AbstractNettyOutboundClient implem
         return bootstrap;
     }
 
-
-
-
-
-    
     /**
      * {@inheritDoc}
      */
@@ -204,27 +199,5 @@ abstract class AbstractOutboundClient extends AbstractNettyOutboundClient implem
         return handler;
     }
 
-    
 
-
-    private void doClose(ServerOption serverOption) {
-        log.info("doClose remote server [{}:{}] success.", serverOption.host(), serverOption.port());
-        serverOption.state(ConnectState.CLOSING);
-        option().serverOptions().remove(serverOption);
-        String remoteAddr = serverOption.address();
-        OutboundChannelHandler outboundChannelHandler = handlerTable.get(remoteAddr);
-        if (outboundChannelHandler != null) {
-            outboundChannelHandler.close().addListener((ChannelFutureListener) future -> {
-                if (future.isSuccess()) {
-                    log.info("close remote server [{}:{}] success.", serverOption.host(), serverOption.port());
-                } else {
-                    log.info("close remote server [{}:{}] failed, cause : ", serverOption.host(), serverOption.port(), future.cause());
-                }
-            });
-        }
-    }
-
-    private int getTimeoutSeconds(ServerOption serverOption) {
-        return serverOption.timeoutSeconds() == 0 ? option().defaultTimeoutSeconds() : serverOption.timeoutSeconds();
-    }
 }

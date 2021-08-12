@@ -127,6 +127,9 @@ public class EslMessage {
      */
     void addHeader(EslHeaders.Name name, String value) {
         log.trace("adding header [{}] [{}]", name, value);
+        if (name == null) {
+            return;
+        }
         headers.put(name, value);
     }
 
