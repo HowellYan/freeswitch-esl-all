@@ -39,29 +39,21 @@ public class ChannelCreateHandler implements EslEventHandler {
      */
     @Override
     public void handle(String address, EslEvent event) {
-        // Caller-Unique-ID
         SendMsg sendMsg = new SendMsg(EslEventUtil.getCallerUniqueId(event));
-//        sendMsg.addCallCommand("execute");
-//        sendMsg.addExecuteAppName("set");
-//        sendMsg.addExecuteAppArg("charge_state=WAIT_ACCOUNT");
-//        inboundClient.sendMessage(address, sendMsg);
-
-//        sendMsg.addCallCommand("execute");
-//        sendMsg.addExecuteAppName("bridge");
-//        sendMsg.addExecuteAppArg("sofia/external/" + EslEventUtil.getSipToUri(event));
-//        inboundClient.sendMessage(address, sendMsg);
 
         try {
-            // 根据服务名从注册中心获取一个健康的服务实例
-            Instance instance = namingService.selectOneHealthyInstance("fs-esl");
-            log.info(" ip [{}] port [{}]", instance.getIp(), instance.getPort());
+            // 判断 是否 是 inbound
+            if ("inbound".equals(EslEventUtil.getCallerDirection(event))) {
+                // 根据服务名从注册中心获取一个健康的服务实例
+                Instance instance = namingService.selectOneHealthyInstance("fs-esl");
+                log.info(" ip [{}] port [{}]", instance.getIp(), instance.getPort());
 
-
-            // 向fs发送 socket 信息
-            sendMsg.addCallCommand("execute");
-            sendMsg.addExecuteAppName("socket");
-            sendMsg.addExecuteAppArg(instance.getIp() + ":8081 async full");
-            inboundClient.sendMessage(address, sendMsg);
+                // 向fs发送 socket 信息
+                sendMsg.addCallCommand("execute");
+                sendMsg.addExecuteAppName("socket");
+                sendMsg.addExecuteAppArg(instance.getIp() + ":8081 async full");
+                inboundClient.sendMessage(address, sendMsg);
+            }
 
         } catch (NacosException e) {
             e.printStackTrace();

@@ -18,14 +18,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OutboundConnectPreprocessEslEventHandler implements OutBoundEventHandler, OutBoundConnectHandler {
 
+    public final static String sofia = "sofia/external/";
+
     @Override
     public void onConnect(Context context, EslEvent eslEvent) {
-        log.info("{}", eslEvent);
+
 
         SendMsg bridgeMsg = new SendMsg();
         bridgeMsg.addCallCommand("execute");
         bridgeMsg.addExecuteAppName("bridge");
-        bridgeMsg.addExecuteAppArg(EslEventUtil.getSipToUri(eslEvent));
+        bridgeMsg.addExecuteAppArg(sofia + EslEventUtil.getSipToUri(eslEvent));
+
+        log.info("bridge to {}", EslEventUtil.getSipToUri(eslEvent));
 
         //同步发送bridge命令接通
         EslMessage response = context.handler().sendSyncMultiLineCommand(context.channel(), bridgeMsg.getMsgLines());
