@@ -18,33 +18,23 @@
 package link.thingscloud.freeswitch.esl.outbound;
 
 
-import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import link.thingscloud.freeswitch.esl.OutboundClient;
-import link.thingscloud.freeswitch.esl.constant.EslConstant;
 import link.thingscloud.freeswitch.esl.exception.InboundClientException;
 import link.thingscloud.freeswitch.esl.outbound.handler.Context;
 import link.thingscloud.freeswitch.esl.outbound.handler.OutboundChannelHandler;
-import link.thingscloud.freeswitch.esl.outbound.listener.EventListener;
-import link.thingscloud.freeswitch.esl.outbound.listener.ServerOptionListener;
 import link.thingscloud.freeswitch.esl.outbound.option.ConnectState;
 import link.thingscloud.freeswitch.esl.outbound.option.OutboundClientOption;
 import link.thingscloud.freeswitch.esl.outbound.option.ServerOption;
-import link.thingscloud.freeswitch.esl.transport.CommandResponse;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
-import link.thingscloud.freeswitch.esl.transport.message.EslHeaders;
-import link.thingscloud.freeswitch.esl.transport.message.EslMessage;
 import link.thingscloud.freeswitch.esl.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>flow :</p>
@@ -60,13 +50,10 @@ import java.util.concurrent.TimeUnit;
  */
 abstract class AbstractOutboundClient extends AbstractNettyOutboundClient implements OutboundClient {
 
-
-
     private final ScheduledThreadPoolExecutor scheduledPoolExecutor = new ScheduledThreadPoolExecutor(1,
-            new DefaultThreadFactory("scheduled-pool", true));
+            new DefaultThreadFactory("outbound-scheduled-pool", true));
 
     private final Map<String, OutboundChannelHandler> handlerTable = new HashMap<>(32);
-
 
     AbstractOutboundClient(OutboundClientOption option) {
         super(option);

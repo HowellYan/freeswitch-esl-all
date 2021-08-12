@@ -6,12 +6,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
@@ -23,7 +18,6 @@ public class UdpServer {
 
     //如果不设置超时，连接会一直占用本地线程，端口，连接客户端一多，会导致本地端口用尽及CPU压力
     private final int timeout = 5;
-
 
 
     @Async

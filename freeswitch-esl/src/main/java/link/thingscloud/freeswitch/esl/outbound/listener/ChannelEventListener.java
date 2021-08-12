@@ -19,9 +19,7 @@ package link.thingscloud.freeswitch.esl.outbound.listener;
 
 import io.netty.channel.ChannelHandlerContext;
 import link.thingscloud.freeswitch.esl.outbound.handler.Context;
-import link.thingscloud.freeswitch.esl.outbound.handler.OutboundChannelHandler;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
-import link.thingscloud.freeswitch.esl.transport.message.EslMessage;
 
 /**
  * <p>ChannelEventListener interface.</p>
@@ -34,13 +32,12 @@ public interface ChannelEventListener {
     /**
      * <p>handleAuthRequest.</p>
      *
-     * @param ctx            a {@link ChannelHandlerContext} object.
+     * @param ctx a {@link ChannelHandlerContext} object.
      */
     void handleAuthRequest(ChannelHandlerContext ctx);
 
     /**
-     *
-     * @param context a {@link Context} object.
+     * @param context  a {@link Context} object.
      * @param eslEvent a {@link EslEvent} object.
      */
     void onConnect(Context context, EslEvent eslEvent);
@@ -48,8 +45,8 @@ public interface ChannelEventListener {
     /**
      * <p>handleEslEvent.</p>
      *
-     * @param context a {@link String} object.
-     * @param eslEvent      a {@link EslEvent} object.
+     * @param context  a {@link String} object.
+     * @param eslEvent a {@link EslEvent} object.
      */
     void handleEslEvent(Context context, EslEvent eslEvent);
 

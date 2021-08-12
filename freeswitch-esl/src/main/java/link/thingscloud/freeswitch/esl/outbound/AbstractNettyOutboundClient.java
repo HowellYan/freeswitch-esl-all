@@ -18,14 +18,14 @@
 package link.thingscloud.freeswitch.esl.outbound;
 
 import com.google.common.util.concurrent.AbstractService;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -33,11 +33,8 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import link.thingscloud.freeswitch.esl.OutboundClientService;
 import link.thingscloud.freeswitch.esl.outbound.handler.OutboundChannelHandler;
 import link.thingscloud.freeswitch.esl.outbound.listener.ChannelEventListener;
-import link.thingscloud.freeswitch.esl.outbound.option.ConnectState;
 import link.thingscloud.freeswitch.esl.outbound.option.OutboundClientOption;
-import link.thingscloud.freeswitch.esl.outbound.option.ServerOption;
 import link.thingscloud.freeswitch.esl.transport.message.EslFrameDecoder;
-import link.thingscloud.freeswitch.esl.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +100,7 @@ abstract class AbstractNettyOutboundClient extends AbstractService implements Ch
      */
     @Override
     public void shutdown() {
-       this.stopAsync();
+        this.stopAsync();
     }
 
 }

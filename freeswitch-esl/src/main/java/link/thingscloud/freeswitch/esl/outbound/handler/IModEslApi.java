@@ -1,7 +1,6 @@
 package link.thingscloud.freeswitch.esl.outbound.handler;
 
 
-
 import link.thingscloud.freeswitch.esl.transport.CommandResponse;
 import link.thingscloud.freeswitch.esl.transport.SendMsg;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
@@ -11,66 +10,66 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IModEslApi {
 
-	enum EventFormat {
+    boolean canSend();
 
-		PLAIN("plain"),
-		XML("xml"),
-		JSON("json");
+    EslMessage sendApiCommand(String command, String arg);
 
-		private final String text;
+    CompletableFuture<EslEvent> sendBackgroundApiCommand(String command, String arg);
 
-		EventFormat(String txt) {
-			this.text = txt;
-		}
+    CommandResponse setEventSubscriptions(EventFormat format, String events);
 
-		@Override
-		public String toString() {
-			return text;
-		}
+    CommandResponse cancelEventSubscriptions();
 
-	}
+    CommandResponse addEventFilter(String eventHeader, String valueToFilter);
 
-	enum LoggingLevel {
+    CommandResponse deleteEventFilter(String eventHeader, String valueToFilter);
 
-		CONSOLE("console"),
-		DEBUG("debug"),
-		INFO("info"),
-		NOTICE("notice"),
-		WARNING("warning"),
-		ERR("err"),
-		CRIT("crit"),
-		ALERT("alert");
+    CommandResponse sendMessage(SendMsg sendMsg);
 
-		private final String text;
+    CommandResponse setLoggingLevel(LoggingLevel level);
 
-		LoggingLevel(String txt) {
-			this.text = txt;
-		}
+    CommandResponse cancelLogging();
 
-		@Override
-		public String toString() {
-			return text;
-		}
+    enum EventFormat {
 
-	}
+        PLAIN("plain"),
+        XML("xml"),
+        JSON("json");
 
-	boolean canSend();
+        private final String text;
 
-	EslMessage sendApiCommand(String command, String arg);
+        EventFormat(String txt) {
+            this.text = txt;
+        }
 
-	CompletableFuture<EslEvent> sendBackgroundApiCommand(String command, String arg);
+        @Override
+        public String toString() {
+            return text;
+        }
 
-	CommandResponse setEventSubscriptions(EventFormat format, String events);
+    }
 
-	CommandResponse cancelEventSubscriptions();
+    enum LoggingLevel {
 
-	CommandResponse addEventFilter(String eventHeader, String valueToFilter);
+        CONSOLE("console"),
+        DEBUG("debug"),
+        INFO("info"),
+        NOTICE("notice"),
+        WARNING("warning"),
+        ERR("err"),
+        CRIT("crit"),
+        ALERT("alert");
 
-	CommandResponse deleteEventFilter(String eventHeader, String valueToFilter);
+        private final String text;
 
-	CommandResponse sendMessage(SendMsg sendMsg);
+        LoggingLevel(String txt) {
+            this.text = txt;
+        }
 
-	CommandResponse setLoggingLevel(LoggingLevel level);
+        @Override
+        public String toString() {
+            return text;
+        }
 
-	CommandResponse cancelLogging();
+    }
 }

@@ -22,6 +22,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import link.thingscloud.opensips.event.InboundClient;
 import link.thingscloud.opensips.event.constant.EslConstant;
 import link.thingscloud.opensips.event.exception.InboundClientException;
+import link.thingscloud.opensips.event.inbound.handler.InboundChannelHandler;
 import link.thingscloud.opensips.event.inbound.listener.EventListener;
 import link.thingscloud.opensips.event.inbound.listener.ServerOptionListener;
 import link.thingscloud.opensips.event.inbound.option.ConnectState;
@@ -32,7 +33,6 @@ import link.thingscloud.opensips.event.transport.event.EslEvent;
 import link.thingscloud.opensips.event.transport.message.EslHeaders;
 import link.thingscloud.opensips.event.transport.message.EslMessage;
 import link.thingscloud.opensips.event.util.StringUtils;
-import link.thingscloud.opensips.event.inbound.handler.InboundChannelHandler;
 
 import java.util.HashMap;
 import java.util.List;

@@ -17,8 +17,6 @@
 
 package link.thingscloud.freeswitch.esl;
 
-import io.netty.channel.ChannelFuture;
-
 /**
  * <p>InboundClientService interface.</p>
  *

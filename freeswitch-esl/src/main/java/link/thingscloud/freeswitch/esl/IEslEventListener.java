@@ -30,8 +30,8 @@ public interface IEslEventListener {
     /**
      * Signal of a server initiated event.
      *
-     * @param address  address
-     * @param event as an {@link link.thingscloud.freeswitch.esl.transport.event.EslEvent}
+     * @param address address
+     * @param event   as an {@link link.thingscloud.freeswitch.esl.transport.event.EslEvent}
      */
     void eventReceived(String address, EslEvent event);
 
@@ -39,8 +39,8 @@ public interface IEslEventListener {
      * Signal of an event containing the result of a client requested background job.  The Job-UUID will
      * be available as an event header of that name.
      *
-     * @param address  address
-     * @param event as an {@link link.thingscloud.freeswitch.esl.transport.event.EslEvent}
+     * @param address address
+     * @param event   as an {@link link.thingscloud.freeswitch.esl.transport.event.EslEvent}
      */
     void backgroundJobResultReceived(String address, EslEvent event);
 

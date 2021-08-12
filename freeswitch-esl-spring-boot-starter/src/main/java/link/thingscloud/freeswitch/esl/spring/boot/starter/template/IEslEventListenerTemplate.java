@@ -42,12 +42,11 @@ import java.util.*;
 public class IEslEventListenerTemplate implements IEslEventListener, InitializingBean {
 
     @Autowired
-    private InboundClient inboundClient;
-    @Autowired
     private final List<EslEventHandler> eslEventHandlers = Collections.emptyList();
-
-    private EslEventHandler defaultEventHandler = new DefaultEslEventHandler();
     private final Map<String, List<EslEventHandler>> handlerTable = new HashMap<>(16);
+    @Autowired
+    private InboundClient inboundClient;
+    private EslEventHandler defaultEventHandler = new DefaultEslEventHandler();
 
     /**
      * {@inheritDoc}

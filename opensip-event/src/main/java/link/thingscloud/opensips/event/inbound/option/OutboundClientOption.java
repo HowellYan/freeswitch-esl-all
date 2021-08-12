@@ -19,9 +19,9 @@ package link.thingscloud.opensips.event.inbound.option;
 
 import link.thingscloud.opensips.event.IEslEventListener;
 import link.thingscloud.opensips.event.ServerConnectionListener;
-import link.thingscloud.opensips.event.util.StringUtils;
 import link.thingscloud.opensips.event.inbound.listener.EventListener;
 import link.thingscloud.opensips.event.inbound.listener.ServerOptionListener;
+import link.thingscloud.opensips.event.util.StringUtils;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -36,34 +36,27 @@ import java.util.List;
 @ToString
 public class OutboundClientOption {
 
+    private final List<ServerOption> serverOptions = new ArrayList<>();
+    private final ServerAddrOption serverAddrOption = new ServerAddrOption(serverOptions);
+    private final List<IEslEventListener> listeners = new ArrayList<>();
+    private final List<String> events = new ArrayList<>();
     private int sndBufSize = 65535;
     private int rcvBufSize = 65535;
-
     private int workerGroupThread = Runtime.getRuntime().availableProcessors() * 2;
     private int publicExecutorThread = Runtime.getRuntime().availableProcessors() * 2;
     private int callbackExecutorThread = Runtime.getRuntime().availableProcessors() * 2;
-
     private int defaultTimeoutSeconds = 5;
     private String defaultPassword = "ClueCon";
-
     private int readTimeoutSeconds = 30;
     private int readerIdleTimeSeconds = 25;
-
     private boolean disablePublicExecutor = false;
     private boolean performance = false;
     private long performanceCostTime = 200;
     private boolean eventPerformance = false;
     private long eventPerformanceCostTime = 200;
-
     private ServerOptionListener serverOptionListener = null;
     private ServerConnectionListener serverConnectionListener = null;
-    private final List<ServerOption> serverOptions = new ArrayList<>();
-    private final ServerAddrOption serverAddrOption = new ServerAddrOption(serverOptions);
-
-    private final List<IEslEventListener> listeners = new ArrayList<>();
-
     private EventListener eventListener = null;
-    private final List<String> events = new ArrayList<>();
 
     /**
      * <p>sndBufSize.</p>

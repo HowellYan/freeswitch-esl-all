@@ -34,6 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/demo")
 public class DemoController {
 
+    @Autowired
+    private InboundClient inboundClient;
+
     /**
      * <p>demo.</p>
      *
@@ -54,9 +57,6 @@ public class DemoController {
     public void addServer1(String host, int port) {
         InboundClient.getInstance().option().addServerOption(new ServerOption(host, port));
     }
-
-    @Autowired
-    private InboundClient inboundClient;
 
     /**
      * <p>addServer2.</p>
@@ -90,7 +90,7 @@ public class DemoController {
 
     @GetMapping("/call")
     public String call() {
-        return inboundClient.bridge("sip:1004@192.168.10.109","","");
+        return inboundClient.bridge("sip:1004@192.168.10.109", "", "");
     }
 
 }

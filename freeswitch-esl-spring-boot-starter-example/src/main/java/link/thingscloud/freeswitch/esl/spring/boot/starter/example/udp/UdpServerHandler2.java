@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 public class UdpServerHandler2 extends SimpleChannelInboundHandler<DatagramPacket> {
     /**
      * 接收数据
+     *
      * @param ctx
      * @param packet
      */
@@ -29,8 +30,10 @@ public class UdpServerHandler2 extends SimpleChannelInboundHandler<DatagramPacke
         DatagramPacket data = new DatagramPacket(Unpooled.copiedBuffer(req), packet.sender());
         ctx.writeAndFlush(data);
     }
+
     /**
      * 捕获异常
+     *
      * @param ctx
      * @param cause
      */

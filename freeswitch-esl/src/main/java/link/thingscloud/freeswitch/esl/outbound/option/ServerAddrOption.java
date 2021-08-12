@@ -30,8 +30,8 @@ import java.util.List;
  * @version 1.0.0
  */
 public class ServerAddrOption {
-    private final List<ServerOption> serverOptions;
     private static final String VALIDATE_MESSAGE_1 = "serverOptions must be not empty!";
+    private final List<ServerOption> serverOptions;
 
     ServerAddrOption(List<ServerOption> serverOptions) {
         this.serverOptions = serverOptions;

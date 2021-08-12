@@ -26,7 +26,6 @@ import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.InboundClie
 import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.OutboundClientProperties;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.template.*;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -83,8 +82,6 @@ public class FreeswitchEslAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(OutboundEventListener.class)
     public OutboundEventListener outboundEventListener() {
-//        OutboundEventListenerTemplate outboundEventListenerTemplate = new OutboundEventListenerTemplate();
-//        outboundClient.option().addListener(outboundEventListenerTemplate);
         return new OutboundEventListenerTemplate();
     }
 

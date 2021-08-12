@@ -5,7 +5,6 @@ import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
 
 public interface OutBoundConnectHandler {
     /**
-     *
      * @param context
      * @param eslEvent
      */

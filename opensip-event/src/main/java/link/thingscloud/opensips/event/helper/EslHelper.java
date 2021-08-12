@@ -17,7 +17,6 @@
 
 package link.thingscloud.opensips.event.helper;
 
-import link.thingscloud.opensips.event.transport.message.EslHeaders;
 import link.thingscloud.opensips.event.transport.event.EslEvent;
 import link.thingscloud.opensips.event.transport.message.EslHeaders;
 import link.thingscloud.opensips.event.transport.message.EslMessage;

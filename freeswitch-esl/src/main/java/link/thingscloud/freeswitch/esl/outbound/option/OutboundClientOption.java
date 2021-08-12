@@ -36,35 +36,28 @@ import java.util.List;
 @ToString
 public class OutboundClientOption {
 
+    private final List<ServerOption> serverOptions = new ArrayList<>();
+    private final ServerAddrOption serverAddrOption = new ServerAddrOption(serverOptions);
+    private final List<OutboundEventListener> listeners = new ArrayList<>();
+    private final List<String> events = new ArrayList<>();
     private int sndBufSize = 65535;
     private int rcvBufSize = 65535;
-
     private int parentGroupThread = Runtime.getRuntime().availableProcessors() * 2;
     private int workerGroupThread = Runtime.getRuntime().availableProcessors() * 2;
     private int publicExecutorThread = Runtime.getRuntime().availableProcessors() * 2;
     private int callbackExecutorThread = Runtime.getRuntime().availableProcessors() * 2;
-
     private int defaultTimeoutSeconds = 5;
     private String defaultPassword = "ClueCon";
-
     private int readTimeoutSeconds = 30;
     private int readerIdleTimeSeconds = 25;
-
     private boolean disablePublicExecutor = false;
     private boolean performance = false;
     private long performanceCostTime = 200;
     private boolean eventPerformance = false;
     private long eventPerformanceCostTime = 200;
-
     private ServerOptionListener serverOptionListener = null;
     private ServerConnectionListener serverConnectionListener = null;
-    private final List<ServerOption> serverOptions = new ArrayList<>();
-    private final ServerAddrOption serverAddrOption = new ServerAddrOption(serverOptions);
-
-    private final List<OutboundEventListener> listeners = new ArrayList<>();
-
     private EventListener eventListener = null;
-    private final List<String> events = new ArrayList<>();
 
     /**
      * <p>sndBufSize.</p>

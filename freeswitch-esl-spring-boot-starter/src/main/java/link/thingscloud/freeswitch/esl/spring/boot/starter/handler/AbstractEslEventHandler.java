@@ -31,12 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractEslEventHandler implements EslEventHandler {
 
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     @Autowired
     protected InboundClient inboundClient;
-
     @Autowired
     protected OutboundClient outboundClient;
-
-    protected final Logger log = LoggerFactory.getLogger(getClass());
 
 }

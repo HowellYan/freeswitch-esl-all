@@ -24,11 +24,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import link.thingscloud.opensips.event.helper.EslHelper;
+import link.thingscloud.opensips.event.inbound.listener.ChannelEventListener;
 import link.thingscloud.opensips.event.transport.event.EslEvent;
 import link.thingscloud.opensips.event.transport.message.EslHeaders;
-import link.thingscloud.opensips.event.util.RemotingUtil;
-import link.thingscloud.opensips.event.inbound.listener.ChannelEventListener;
 import link.thingscloud.opensips.event.transport.message.EslMessage;
+import link.thingscloud.opensips.event.util.RemotingUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -57,10 +57,9 @@ public class InboundChannelHandler extends SimpleChannelInboundHandler<EslMessag
     private final ChannelEventListener listener;
     private final ExecutorService publicExecutor;
     private final boolean disablePublicExecutor;
+    private final boolean isTraceEnabled = log.isTraceEnabled();
     private Channel channel;
     private String remoteAddr;
-
-    private final boolean isTraceEnabled = log.isTraceEnabled();
 
     /**
      * <p>Constructor for InboundChannelHandler.</p>

@@ -48,10 +48,8 @@ abstract class AbstractNettyInboundClient implements ChannelEventListener, Inbou
     final ExecutorService publicExecutor;
 
     final OutboundClientOption option;
-
-    private Channel channel;
-
     final Logger log = LoggerFactory.getLogger(getClass());
+    private Channel channel;
 
     AbstractNettyInboundClient(OutboundClientOption option) {
         this.option = option;

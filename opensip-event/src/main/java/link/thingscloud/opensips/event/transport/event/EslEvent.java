@@ -17,9 +17,9 @@
 
 package link.thingscloud.opensips.event.transport.event;
 
-import link.thingscloud.opensips.event.transport.util.HeaderParser;
 import link.thingscloud.opensips.event.transport.message.EslHeaders;
 import link.thingscloud.opensips.event.transport.message.EslMessage;
+import link.thingscloud.opensips.event.transport.util.HeaderParser;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.UnsupportedEncodingException;

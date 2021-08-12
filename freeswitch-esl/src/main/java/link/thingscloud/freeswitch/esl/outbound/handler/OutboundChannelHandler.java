@@ -172,7 +172,7 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     }
 
     protected void handleEslMessage(ChannelHandlerContext ctx, EslMessage message) {
-        // log.info("Received message: [{}]", message);
+        log.info("Received message: [{}]", message);
         final String contentType = message.getContentType();
 
         switch (contentType) {
@@ -251,6 +251,37 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
         try {
             syncCallbacks.add(callback);
             channel.writeAndFlush(sb.toString());
+        } finally {
+            syncLock.unlock();
+        }
+
+        //  Block until the response is available
+        return callback.get();
+    }
+
+    /**
+     * Synthesise a synchronous command/response by creating a callback object which is placed in
+     * queue and blocks waiting for another IO thread to process an incoming {@link EslMessage} and
+     * attach it to the callback.
+     *
+     * @param channel
+     * @param commandLines List of command lines to send
+     * @return the {@link EslMessage} attached to this command's callback
+     */
+    public EslMessage sendSyncMultiLineCommand(Channel channel, final List<String> commandLines) {
+        SyncCallback callback = new SyncCallback();
+        //  Build command with double line terminator at the end
+        StringBuilder sb = new StringBuilder();
+        for (String line : commandLines) {
+            sb.append(line);
+            sb.append(LINE_TERMINATOR);
+        }
+        sb.append(LINE_TERMINATOR);
+
+        syncLock.lock();
+        try {
+            syncCallbacks.add(callback);
+            channel.write(sb.toString());
         } finally {
             syncLock.unlock();
         }

@@ -57,10 +57,9 @@ public class InboundChannelHandler extends SimpleChannelInboundHandler<EslMessag
     private final ChannelEventListener listener;
     private final ExecutorService publicExecutor;
     private final boolean disablePublicExecutor;
+    private final boolean isTraceEnabled = log.isTraceEnabled();
     private Channel channel;
     private String remoteAddr;
-
-    private final boolean isTraceEnabled = log.isTraceEnabled();
 
     /**
      * <p>Constructor for InboundChannelHandler.</p>

@@ -12,6 +12,9 @@ public class VariableUtil {
 
     private static final String VARIABLE_PREFIX = "variable_";
 
+    private VariableUtil() {
+    }
+
     public static String get(EslEvent event, String key) {
         return event.getEventHeaders().get(key);
     }
@@ -33,9 +36,6 @@ public class VariableUtil {
             return eventHeaders.get(key);
         }
         return eventHeaders.get(VARIABLE_PREFIX + key);
-    }
-
-    private VariableUtil() {
     }
 
 }

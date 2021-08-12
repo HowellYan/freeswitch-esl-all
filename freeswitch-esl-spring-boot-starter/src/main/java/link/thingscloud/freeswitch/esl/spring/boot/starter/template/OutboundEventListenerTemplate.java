@@ -1,21 +1,19 @@
 package link.thingscloud.freeswitch.esl.spring.boot.starter.template;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import link.thingscloud.freeswitch.esl.OutboundClient;
 import link.thingscloud.freeswitch.esl.OutboundEventListener;
 import link.thingscloud.freeswitch.esl.outbound.handler.Context;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.*;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.DefaultOutBoundConnectHandler;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.DefaultOutBoundEventHandler;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.OutBoundConnectHandler;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.OutBoundEventHandler;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
 import link.thingscloud.freeswitch.esl.util.ArrayUtils;
 import link.thingscloud.freeswitch.esl.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
