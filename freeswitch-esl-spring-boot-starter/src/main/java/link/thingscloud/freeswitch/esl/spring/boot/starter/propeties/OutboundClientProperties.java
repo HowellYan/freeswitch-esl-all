@@ -48,6 +48,6 @@ public class OutboundClientProperties {
     private boolean eventPerformance = false;
     private long eventPerformanceCostTime = 200;
     private List<String> events = new ArrayList<>();
-    private List<ServerProperties> servers = new ArrayList<>();
+    private ServerProperties server = new ServerProperties();
 
 }

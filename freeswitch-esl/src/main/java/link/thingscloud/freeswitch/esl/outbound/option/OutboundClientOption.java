@@ -19,9 +19,6 @@ package link.thingscloud.freeswitch.esl.outbound.option;
 
 import link.thingscloud.freeswitch.esl.OutboundEventListener;
 import link.thingscloud.freeswitch.esl.ServerConnectionListener;
-import link.thingscloud.freeswitch.esl.outbound.listener.EventListener;
-import link.thingscloud.freeswitch.esl.outbound.listener.ServerOptionListener;
-import link.thingscloud.freeswitch.esl.util.StringUtils;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -36,10 +33,9 @@ import java.util.List;
 @ToString
 public class OutboundClientOption {
 
-    private final List<ServerOption> serverOptions = new ArrayList<>();
-    private final ServerAddrOption serverAddrOption = new ServerAddrOption(serverOptions);
     private final List<OutboundEventListener> listeners = new ArrayList<>();
     private final List<String> events = new ArrayList<>();
+    private ServerOption serverOption = null;
     private int sndBufSize = 65535;
     private int rcvBufSize = 65535;
     private int parentGroupThread = Runtime.getRuntime().availableProcessors() * 2;
@@ -55,9 +51,7 @@ public class OutboundClientOption {
     private long performanceCostTime = 200;
     private boolean eventPerformance = false;
     private long eventPerformanceCostTime = 200;
-    private ServerOptionListener serverOptionListener = null;
     private ServerConnectionListener serverConnectionListener = null;
-    private EventListener eventListener = null;
 
     /**
      * <p>sndBufSize.</p>
@@ -358,35 +352,6 @@ public class OutboundClientOption {
     }
 
     /**
-     * <p>serverOptionListener.</p>
-     *
-     * @return a {@link ServerOptionListener} object.
-     */
-    public ServerOptionListener serverOptionListener() {
-        return serverOptionListener;
-    }
-
-    /**
-     * <p>serverOptionListener.</p>
-     *
-     * @param serverOptionListener a {@link ServerOptionListener} object.
-     * @return a {@link OutboundClientOption} object.
-     */
-    public OutboundClientOption serverOptionListener(ServerOptionListener serverOptionListener) {
-        this.serverOptionListener = serverOptionListener;
-        return this;
-    }
-
-    /**
-     * <p>serverConnectionListener.</p>
-     *
-     * @return a {@link ServerOptionListener} object.
-     */
-    public ServerConnectionListener serverConnectionListener() {
-        return serverConnectionListener;
-    }
-
-    /**
      * <p>serverConnectionListener.</p>
      *
      * @param serverConnectionListener a {@link ServerConnectionListener} object.
@@ -397,55 +362,22 @@ public class OutboundClientOption {
         return this;
     }
 
-    /**
-     * <p>serverAddrOption.</p>
-     *
-     * @return a {@link ServerAddrOption} object.
-     */
-    public ServerAddrOption serverAddrOption() {
-        return serverAddrOption;
-    }
 
     /**
      * <p>serverOptions.</p>
      *
      * @return a {@link List} object.
      */
-    public List<ServerOption> serverOptions() {
-        return serverOptions;
+    public ServerOption serverOption() {
+        return serverOption;
     }
 
     /**
-     * <p>addServerOption.</p>
      *
-     * @param serverOption a {@link ServerOption} object.
-     * @return a {@link OutboundClientOption} object.
+     * @param serverOption
      */
-    public OutboundClientOption addServerOption(ServerOption serverOption) {
-        for (ServerOption option : serverOptions) {
-            if (StringUtils.equals(option.address(), serverOption.address())) {
-                return this;
-            }
-        }
-        serverOptions.add(serverOption);
-        if (serverOptionListener != null) {
-            serverOptionListener.onAdded(serverOption);
-        }
-        return this;
-    }
-
-    /**
-     * <p>removeServerOption.</p>
-     *
-     * @param serverOption a {@link ServerOption} object.
-     * @return a {@link OutboundClientOption} object.
-     */
-    public OutboundClientOption removeServerOption(ServerOption serverOption) {
-        serverOptions.remove(serverOption);
-        if (serverOptionListener != null) {
-            serverOptionListener.onRemoved(serverOption);
-        }
-        return this;
+    public void addServerOption(ServerOption serverOption) {
+         this.serverOption = serverOption;
     }
 
     /**
@@ -479,25 +411,6 @@ public class OutboundClientOption {
         return listeners;
     }
 
-    /**
-     * <p>eventListener.</p>
-     *
-     * @return a {@link EventListener} object.
-     */
-    public EventListener eventListener() {
-        return eventListener;
-    }
-
-    /**
-     * <p>eventListener.</p>
-     *
-     * @param eventListener a {@link EventListener} object.
-     * @return a {@link OutboundClientOption} object.
-     */
-    public OutboundClientOption eventListener(EventListener eventListener) {
-        this.eventListener = eventListener;
-        return this;
-    }
 
     /**
      * <p>events.</p>
@@ -527,9 +440,6 @@ public class OutboundClientOption {
         }
         if (!list.isEmpty()) {
             events.addAll(list);
-            if (eventListener != null) {
-                eventListener.addEvents(list);
-            }
         }
         return this;
     }
@@ -541,9 +451,6 @@ public class OutboundClientOption {
      */
     public OutboundClientOption cancelEvents() {
         if (!events.isEmpty()) {
-            if (eventListener != null) {
-                eventListener.cancelEvents();
-            }
             events.clear();
         }
         return this;

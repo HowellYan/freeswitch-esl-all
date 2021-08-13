@@ -101,28 +101,7 @@ abstract class AbstractOutboundClient extends AbstractNettyOutboundClient implem
         log.info("Disconnected[{}] ...", address);
     }
 
-    /**
-     * <p>getAuthedHandler.</p>
-     *
-     * @param address a {@link String} object.
-     * @return a {@link OutboundChannelHandler} object.
-     */
-    public OutboundChannelHandler getAuthedHandler(String address) {
-        OutboundChannelHandler handler = handlerTable.get(address);
-        if (handler == null) {
-            throw new InboundClientException("not found outbound handler for address : " + address);
-        }
-        List<ServerOption> serverOptions = option().serverOptions();
-        for (ServerOption serverOption : serverOptions) {
-            if (StringUtils.equals(serverOption.address(), address)) {
-                if (serverOption.state() != ConnectState.AUTHED) {
-                    throw new InboundClientException("outbound handler is not authed for address : " + address);
-                }
-                break;
-            }
-        }
-        return handler;
-    }
+
 
 
 }

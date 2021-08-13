@@ -3,6 +3,7 @@ package link.thingscloud.freeswitch.esl.spring.boot.starter.handler;
 import link.thingscloud.freeswitch.esl.outbound.option.OutboundClientOption;
 import link.thingscloud.freeswitch.esl.outbound.option.ServerOption;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.OutboundClientProperties;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.ServerProperties;
 import link.thingscloud.freeswitch.esl.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,13 +31,13 @@ public abstract class AbstractOutboundClientOptionHandler implements OutboundCli
     @Override
     public OutboundClientOption getOption() {
         OutboundClientOption option = newOutboundClientOption();
-        properties.getServers().forEach(server -> {
-            if (StringUtils.isNotBlank(server.getHost()) && server.getPort() > 1) {
-                option.addServerOption(new ServerOption(server.getHost(), server.getPort())
-                        .timeoutSeconds(server.getTimeoutSeconds())
-                        .password(server.getPassword()));
-            }
-        });
+        ServerProperties server = properties.getServer();
+        if (StringUtils.isNotBlank(server.getHost()) && server.getPort() > 1) {
+            option.addServerOption(new ServerOption(server.getHost(), server.getPort())
+                    .timeoutSeconds(server.getTimeoutSeconds())
+                    .password(server.getPassword()));
+        }
+
         properties.getEvents().forEach(event -> {
             if (StringUtils.isNotBlank(event)) {
                 option.addEvents(event);

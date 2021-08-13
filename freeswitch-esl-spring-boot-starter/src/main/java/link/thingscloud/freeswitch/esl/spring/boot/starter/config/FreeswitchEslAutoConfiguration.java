@@ -124,7 +124,6 @@ public class FreeswitchEslAutoConfiguration {
     public OutboundClient outboundClient(@Autowired OutboundClientOptionHandler outboundClientOptionHandler, @Autowired OutboundEventListener outboundEventListener) {
         OutboundClientOption option = outboundClientOptionHandler.getOption();
         option.addListener(outboundEventListener);
-        option.eventListener();
         log.info("outboundClient option : [{}]", option);
         return OutboundClient.newInstance(option);
     }

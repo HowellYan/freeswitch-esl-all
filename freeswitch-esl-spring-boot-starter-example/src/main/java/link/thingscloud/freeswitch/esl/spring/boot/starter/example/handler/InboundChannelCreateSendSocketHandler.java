@@ -9,6 +9,7 @@ import link.thingscloud.freeswitch.esl.constant.EventNames;
 import link.thingscloud.freeswitch.esl.helper.EslHelper;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
 import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
+import link.thingscloud.freeswitch.esl.spring.boot.starter.propeties.OutboundClientProperties;
 import link.thingscloud.freeswitch.esl.transport.SendMsg;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
 import link.thingscloud.freeswitch.esl.util.EslEventUtil;
@@ -34,6 +35,9 @@ public class InboundChannelCreateSendSocketHandler implements EslEventHandler {
     @Autowired
     private InboundClient inboundClient;
 
+    @Autowired
+    private OutboundClientProperties outboundClientProperties;
+
     /**
      * {@inheritDoc}
      */
@@ -51,8 +55,8 @@ public class InboundChannelCreateSendSocketHandler implements EslEventHandler {
                 // 向fs发送 socket 信息
                 sendMsg.addCallCommand("execute");
                 sendMsg.addExecuteAppName("socket");
-                // 组装  <action application="socket" data=" IP :8081 async full" />
-                sendMsg.addExecuteAppArg(instance.getIp() + ":8081 async full");
+                // 组装  <action application="socket" data=" IP : yaml配置的端口 async full" />
+                sendMsg.addExecuteAppArg(instance.getIp() + ":" + outboundClientProperties.getServer().getPort() + " async full");
                 inboundClient.sendMessage(address, sendMsg);
             }
 

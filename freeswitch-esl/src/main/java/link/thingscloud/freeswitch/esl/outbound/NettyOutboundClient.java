@@ -69,9 +69,8 @@ public class NettyOutboundClient extends AbstractOutboundClientCommand {
     @Override
     protected void doStart() {
         log.info("outbound client will start ...");
-        // todo 只获取 第一个配置
-        if (option != null && option.serverOptions().size() > 0) {
-            ServerOption serverOption = option.serverOptions().get(0);
+        if (option != null) {
+            ServerOption serverOption = option.serverOption();
             if (serverOption.state() == ConnectState.INIT) {
                 serverOption.state(ConnectState.CONNECTING);
                 doBind(serverOption);
