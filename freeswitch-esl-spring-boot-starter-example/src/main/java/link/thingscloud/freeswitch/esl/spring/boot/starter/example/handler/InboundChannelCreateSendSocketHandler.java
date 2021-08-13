@@ -50,13 +50,15 @@ public class InboundChannelCreateSendSocketHandler implements EslEventHandler {
             if ("inbound".equals(EslEventUtil.getCallerDirection(event))) {
                 // 根据服务名从注册中心获取一个健康的服务实例
                 Instance instance = namingService.selectOneHealthyInstance("fs-esl");
-                log.info("ip [{}] port [{}] ", instance.getIp(), instance.getPort());
-
-                // 向fs发送 socket 信息
+                // 向fs 发送 socket 信息
                 sendMsg.addCallCommand("execute");
                 sendMsg.addExecuteAppName("socket");
                 // 组装  <action application="socket" data=" IP : yaml配置的端口 async full" />
-                sendMsg.addExecuteAppArg(instance.getIp() + ":" + outboundClientProperties.getServer().getPort() + " async full");
+                String arg = instance.getIp() + ":" + outboundClientProperties.getServer().getPort() + " async full";
+
+                log.info("instance socket: ip [{}] port [{}], arg: [{}]", instance.getIp(), outboundClientProperties.getServer().getPort(), arg);
+                sendMsg.addExecuteAppArg(arg);
+
                 inboundClient.sendMessage(address, sendMsg);
             }
 
