@@ -97,8 +97,10 @@ abstract class AbstractOutboundClient extends AbstractNettyOutboundClient implem
      * {@inheritDoc}
      */
     @Override
-    public void handleDisconnectNotice(String address) {
+    public void handleDisconnectNotice(String address, ChannelHandlerContext ctx) {
         log.info("Disconnected[{}] ...", address);
+        ctx.channel().close();
+        ctx.close();
     }
 
 

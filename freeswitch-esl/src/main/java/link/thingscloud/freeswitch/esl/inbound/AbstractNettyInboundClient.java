@@ -61,7 +61,7 @@ abstract class AbstractNettyInboundClient implements ChannelEventListener, Inbou
         publicExecutor = new ScheduledThreadPoolExecutor(option.publicExecutorThread(),
                 new DefaultThreadFactory("Inbound-Executor", true));
 
-        workerGroup = new NioEventLoopGroup(option.workerGroupThread());
+        workerGroup = new NioEventLoopGroup(option.workerGroupThread(), new DefaultThreadFactory("inbound-worker", true));
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)

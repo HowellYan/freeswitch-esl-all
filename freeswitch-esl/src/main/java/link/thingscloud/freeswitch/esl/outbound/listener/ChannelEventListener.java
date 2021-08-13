@@ -55,6 +55,6 @@ public interface ChannelEventListener {
      *
      * @param remoteAddr a {@link String} object.
      */
-    void handleDisconnectNotice(String remoteAddr);
+    void handleDisconnectNotice(String remoteAddr, ChannelHandlerContext ctx);
 
 }

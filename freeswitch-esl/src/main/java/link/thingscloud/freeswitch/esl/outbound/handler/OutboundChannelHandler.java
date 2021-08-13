@@ -97,7 +97,7 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
                 .exceptionally(throwable -> {
                     log.error("Outbound Error", throwable);
                     ctx.channel().close();
-                    listener.handleDisconnectNotice(remoteAddr);
+                    listener.handleDisconnectNotice(remoteAddr, ctx);
                     return null;
                 });
     }
@@ -126,6 +126,7 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     }
 
     /**
+     *
      * {@inheritDoc}
      */
     @Override
@@ -139,6 +140,7 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
         for (final CompletableFuture<EslEvent> backgroundJob : backgroundJobs.values()) {
             backgroundJob.completeExceptionally(cause.getCause());
         }
+        ctx.channel().close();
 
         ctx.close();
 
@@ -197,12 +199,12 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
                 break;
 
             case EslHeaders.Value.TEXT_DISCONNECT_NOTICE:
-                log.debug("Disconnect notice received [{}]", message);
-                listener.handleDisconnectNotice(remoteAddr);
+                log.error("Disconnect notice received [{}]", message);
+                listener.handleDisconnectNotice(remoteAddr, ctx);
                 break;
 
             default:
-                log.warn("Unexpected message content type [{}]", contentType);
+                log.error("Unexpected message content type [{}]", contentType);
                 break;
         }
     }

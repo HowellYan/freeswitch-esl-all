@@ -44,8 +44,8 @@ public class OutboundClientOption {
     private int callbackExecutorThread = Runtime.getRuntime().availableProcessors() * 2;
     private int defaultTimeoutSeconds = 5;
     private String defaultPassword = "ClueCon";
-    private int readTimeoutSeconds = 30;
-    private int readerIdleTimeSeconds = 25;
+    private int readTimeoutSeconds = 3600 * 24;
+    private int readerIdleTimeSeconds = 3600 * 24;
     private boolean disablePublicExecutor = false;
     private boolean performance = false;
     private long performanceCostTime = 200;
