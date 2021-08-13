@@ -110,7 +110,6 @@ public class Context implements IModEslApi {
         if (!isNullOrEmpty(arg)) {
             sb.append(' ').append(arg);
         }
-
         return handler.sendBackgroundApiCommand(channel, sb.toString());
     }
 

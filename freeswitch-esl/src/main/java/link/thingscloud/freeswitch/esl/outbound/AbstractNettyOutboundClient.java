@@ -82,7 +82,7 @@ abstract class AbstractNettyOutboundClient extends AbstractService implements Ch
                             pipeline.addLast("readTimeout", new ReadTimeoutHandler(option.readTimeoutSeconds()));
                         }
                         // now the inbound client logic
-                        pipeline.addLast("clientHandler", new OutboundChannelHandler(AbstractNettyOutboundClient.this, publicExecutor, option.disablePublicExecutor()));
+                        pipeline.addLast("clientHandler", new OutboundChannelHandler(AbstractNettyOutboundClient.this, publicExecutor));
                     }
                 });
     }

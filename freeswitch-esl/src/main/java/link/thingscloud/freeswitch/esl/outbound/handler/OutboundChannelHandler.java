@@ -23,6 +23,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import link.thingscloud.freeswitch.esl.helper.EslHelper;
 import link.thingscloud.freeswitch.esl.outbound.listener.ChannelEventListener;
 import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
@@ -54,10 +55,12 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     private final Queue<SyncCallback> syncCallbacks = new ConcurrentLinkedQueue<>();
     private final ChannelEventListener listener;
     private final ExecutorService publicExecutor;
-    private final boolean disablePublicExecutor;
     private final ConcurrentHashMap<String, CompletableFuture<EslEvent>> backgroundJobs =
             new ConcurrentHashMap<>();
-    private final ExecutorService backgroundJobExecutor = Executors.newCachedThreadPool();
+
+    private final ExecutorService backgroundJobExecutor = new ScheduledThreadPoolExecutor(8,
+            new DefaultThreadFactory("Outbound-BackgroundJob-Executor", true));
+
     private final boolean isTraceEnabled = log.isTraceEnabled();
     private final ConcurrentLinkedQueue<CompletableFuture<EslMessage>> apiCalls =
             new ConcurrentLinkedQueue<>();
@@ -69,12 +72,10 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
      *
      * @param listener              a {@link ChannelEventListener} object.
      * @param publicExecutor        a {@link ExecutorService} object.
-     * @param disablePublicExecutor a boolean.
      */
-    public OutboundChannelHandler(ChannelEventListener listener, ExecutorService publicExecutor, boolean disablePublicExecutor) {
+    public OutboundChannelHandler(ChannelEventListener listener, ExecutorService publicExecutor) {
         this.listener = listener;
         this.publicExecutor = publicExecutor;
-        this.disablePublicExecutor = disablePublicExecutor;
     }
 
     /**
@@ -325,7 +326,6 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
     }
 
     public CompletableFuture<EslEvent> sendBackgroundApiCommand(Channel channel, final String command) {
-
         return sendApiSingleLineCommand(channel, command)
                 .thenComposeAsync(result -> {
                     if (result.hasHeader(EslHeaders.Name.JOB_UUID)) {
