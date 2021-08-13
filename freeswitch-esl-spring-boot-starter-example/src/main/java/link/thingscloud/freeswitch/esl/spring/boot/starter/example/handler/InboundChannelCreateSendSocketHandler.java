@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @EslEventName(EventNames.CHANNEL_CREATE)
 @Component
-public class ChannelCreateHandler implements EslEventHandler {
+public class InboundChannelCreateSendSocketHandler implements EslEventHandler {
 
     @NacosInjected
     private NamingService namingService;
@@ -42,15 +42,16 @@ public class ChannelCreateHandler implements EslEventHandler {
         SendMsg sendMsg = new SendMsg(EslEventUtil.getCallerUniqueId(event));
 
         try {
-            // 判断 是否 是 inbound
+            // 判断 是否 是 inbound 处理
             if ("inbound".equals(EslEventUtil.getCallerDirection(event))) {
                 // 根据服务名从注册中心获取一个健康的服务实例
                 Instance instance = namingService.selectOneHealthyInstance("fs-esl");
-                log.info(" ip [{}] port [{}]", instance.getIp(), instance.getPort());
+                log.info("ip [{}] port [{}] ", instance.getIp(), instance.getPort());
 
                 // 向fs发送 socket 信息
                 sendMsg.addCallCommand("execute");
                 sendMsg.addExecuteAppName("socket");
+                // 组装  <action application="socket" data=" IP :8081 async full" />
                 sendMsg.addExecuteAppArg(instance.getIp() + ":8081 async full");
                 inboundClient.sendMessage(address, sendMsg);
             }
@@ -58,7 +59,7 @@ public class ChannelCreateHandler implements EslEventHandler {
         } catch (NacosException e) {
             e.printStackTrace();
         }
-        log.info("address[{}] EslEvent[{}]", address, EslHelper.formatEslEvent(event));
+        log.debug("address[{}] EslEvent[{}]", address, EslHelper.formatEslEvent(event));
     }
 
 

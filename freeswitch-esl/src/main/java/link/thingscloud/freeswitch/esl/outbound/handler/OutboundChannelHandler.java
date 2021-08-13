@@ -178,12 +178,16 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
         switch (contentType) {
             case EslHeaders.Value.API_RESPONSE:
                 log.debug("Api response received [{}]", message);
-                apiCalls.poll().complete(message);
+                if (apiCalls.size() > 0) {
+                    apiCalls.poll().complete(message);
+                }
                 break;
 
             case EslHeaders.Value.COMMAND_REPLY:
                 log.debug("Command reply received [{}]", message);
-                apiCalls.poll().complete(message);
+                if (apiCalls.size() > 0) {
+                    apiCalls.poll().complete(message);
+                }
                 break;
 
             case EslHeaders.Value.AUTH_REQUEST:
@@ -288,6 +292,24 @@ public class OutboundChannelHandler extends SimpleChannelInboundHandler<EslMessa
 
         //  Block until the response is available
         return callback.get();
+    }
+
+    public void sendAsyncMultiLineCommand(Channel channel, final List<String> commandLines) {
+        SyncCallback callback = new SyncCallback();
+        //  Build command with double line terminator at the end
+        StringBuilder sb = new StringBuilder();
+        for (String line : commandLines) {
+            sb.append(line);
+            sb.append(LINE_TERMINATOR);
+        }
+        sb.append(LINE_TERMINATOR);
+        syncLock.lock();
+        try {
+            syncCallbacks.add(callback);
+            channel.write(sb.toString());
+        } finally {
+            syncLock.unlock();
+        }
     }
 
     public CompletableFuture<EslMessage> sendApiSingleLineCommand(Channel channel, final String command) {
