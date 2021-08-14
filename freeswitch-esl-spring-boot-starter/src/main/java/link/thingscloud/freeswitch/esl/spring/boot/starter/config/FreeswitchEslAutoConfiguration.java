@@ -117,7 +117,7 @@ public class FreeswitchEslAutoConfiguration {
      * <p>inboundClient.</p>
      *
      * @param outboundClientOptionHandler a {@link link.thingscloud.freeswitch.esl.spring.boot.starter.handler.InboundClientOptionHandler} object.
-     * @return a {@link link.thingscloud.freeswitch.esl.InboundClient} object.
+     * @return a {@link link.thingscloud.freeswitch.esl.OutboundClient} object.
      */
     @Bean(initMethod = "start", destroyMethod = "shutdown")
     @ConditionalOnMissingBean(OutboundClient.class)

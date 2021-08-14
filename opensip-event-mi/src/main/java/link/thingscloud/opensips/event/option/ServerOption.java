@@ -15,30 +15,43 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.example;
+package link.thingscloud.opensips.event.option;
 
-import link.thingscloud.freeswitch.esl.constant.EventNames;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
-import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
- * <p>HeartbeatEslEventHandler class.</p>
+ * <p>ServerOption class.</p>
  *
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  * @version 1.0.0
  */
-@Slf4j
-@EslEventName(EventNames.HEARTBEAT)
-@Component
-public class HeartbeatEslEventHandler implements EslEventHandler {
+
+@Data
+@Accessors(fluent = true)
+public class ServerOption {
+    private final String host;
+    private final int port;
+    private int timeoutSeconds;
+    private String password;
+
+    private ConnectState state = ConnectState.INIT;
+
+    private int connectTimes = 0;
+
     /**
-     * {@inheritDoc}
+     * <p>address.</p>
+     *
+     * @return a {@link String} object.
      */
-    @Override
-    public void handle(String address, EslEvent event) {
-        log.debug("HeartbeatEslEventHandler handle address[{}] EslEvent[{}].", address, event);
+    public String address() {
+        return host + ":" + port;
+    }
+
+    /**
+     * <p>addConnectTimes.</p>
+     */
+    public void addConnectTimes() {
+        connectTimes++;
     }
 }

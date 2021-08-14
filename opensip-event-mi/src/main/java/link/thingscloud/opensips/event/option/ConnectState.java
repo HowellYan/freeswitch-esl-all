@@ -15,30 +15,49 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.example;
-
-import link.thingscloud.freeswitch.esl.constant.EventNames;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
-import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+package link.thingscloud.opensips.event.option;
 
 /**
- * <p>HeartbeatEslEventHandler class.</p>
+ * <p>ConnectState class.</p>
  *
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  * @version 1.0.0
  */
-@Slf4j
-@EslEventName(EventNames.HEARTBEAT)
-@Component
-public class HeartbeatEslEventHandler implements EslEventHandler {
+public enum ConnectState {
     /**
-     * {@inheritDoc}
+     * 初始化状态
      */
-    @Override
-    public void handle(String address, EslEvent event) {
-        log.debug("HeartbeatEslEventHandler handle address[{}] EslEvent[{}].", address, event);
-    }
+    INIT,
+    /**
+     * 正在连接
+     */
+    CONNECTING,
+    /**
+     * 连接失败
+     */
+    FAILED,
+    /**
+     * 连接成功
+     */
+    CONNECTED,
+    /**
+     * 认证成功
+     */
+    AUTHED,
+    /**
+     * 认证失败
+     */
+    AUTHED_FAILED,
+    /**
+     * 正在关闭连接
+     */
+    CLOSING,
+    /**
+     * 连接已关闭
+     */
+    CLOSED,
+    /**
+     * 应用已停止
+     */
+    SHUTDOWN
 }

@@ -36,7 +36,8 @@
         <module>freeswitch-esl-example</module>
         <module>freeswitch-esl-spring-boot-starter</module>
         <module>freeswitch-esl-spring-boot-starter-example</module>
-        <module>opensip-event</module>
+        <module>opensip-event-mi</module>
+        <module>opensip-event-mi-spring-boot-starter</module>
     </modules>
 
     <properties>
@@ -77,6 +78,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>freeswitch-esl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>opensip-event-mi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

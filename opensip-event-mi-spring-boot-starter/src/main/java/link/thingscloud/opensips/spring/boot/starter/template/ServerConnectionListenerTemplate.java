@@ -15,30 +15,33 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.example;
+package link.thingscloud.opensips.spring.boot.starter.template;
 
-import link.thingscloud.freeswitch.esl.constant.EventNames;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
-import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
+import link.thingscloud.opensips.event.listener.ServerConnectionListener;
+import link.thingscloud.opensips.event.option.ServerOption;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 /**
- * <p>HeartbeatEslEventHandler class.</p>
+ * <p>ServerConnectionListenerTemplate class.</p>
  *
- * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
+ * @author : zhouhailin
  * @version 1.0.0
  */
 @Slf4j
-@EslEventName(EventNames.HEARTBEAT)
-@Component
-public class HeartbeatEslEventHandler implements EslEventHandler {
+public class ServerConnectionListenerTemplate implements ServerConnectionListener {
     /**
      * {@inheritDoc}
      */
     @Override
-    public void handle(String address, EslEvent event) {
-        log.debug("HeartbeatEslEventHandler handle address[{}] EslEvent[{}].", address, event);
+    public void onOpened(ServerOption serverOption) {
+        log.info("onOpened serverOption : {}", serverOption.host() + ":" + serverOption.port());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onClosed(ServerOption serverOption) {
+        log.info("onClosed serverOption : {}", serverOption.host() + ":" + serverOption.port());
     }
 }

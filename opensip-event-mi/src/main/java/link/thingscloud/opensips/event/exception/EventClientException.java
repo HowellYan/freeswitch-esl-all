@@ -15,30 +15,40 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.example;
-
-import link.thingscloud.freeswitch.esl.constant.EventNames;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
-import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+package link.thingscloud.opensips.event.exception;
 
 /**
- * <p>HeartbeatEslEventHandler class.</p>
+ * <p>InboundClientException class.</p>
  *
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  * @version 1.0.0
  */
-@Slf4j
-@EslEventName(EventNames.HEARTBEAT)
-@Component
-public class HeartbeatEslEventHandler implements EslEventHandler {
+public class EventClientException extends RuntimeException {
     /**
-     * {@inheritDoc}
+     * <p>Constructor for InboundClientException.</p>
+     *
+     * @param message a {@link String} object.
      */
-    @Override
-    public void handle(String address, EslEvent event) {
-        log.debug("HeartbeatEslEventHandler handle address[{}] EslEvent[{}].", address, event);
+    public EventClientException(String message) {
+        super(message);
+    }
+
+    /**
+     * <p>Constructor for InboundClientException.</p>
+     *
+     * @param message a {@link String} object.
+     * @param cause   a {@link Throwable} object.
+     */
+    public EventClientException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * <p>Constructor for InboundClientException.</p>
+     *
+     * @param cause a {@link Throwable} object.
+     */
+    public EventClientException(Throwable cause) {
+        super(cause);
     }
 }

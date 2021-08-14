@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.example;
+package link.thingscloud.opensips.spring.boot.starter.propeties;
 
-import link.thingscloud.freeswitch.esl.constant.EventNames;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
-import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import lombok.Data;
 
 /**
- * <p>HeartbeatEslEventHandler class.</p>
+ * <p>ServerProperties class.</p>
  *
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  * @version 1.0.0
  */
-@Slf4j
-@EslEventName(EventNames.HEARTBEAT)
-@Component
-public class HeartbeatEslEventHandler implements EslEventHandler {
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void handle(String address, EslEvent event) {
-        log.debug("HeartbeatEslEventHandler handle address[{}] EslEvent[{}].", address, event);
-    }
+@Data
+public class ServerProperties {
+    private String host;
+    private int port = 8021;
+    private int timeoutSeconds;
+    private String password;
 }

@@ -15,30 +15,35 @@
  * limitations under the License.
  */
 
-package link.thingscloud.freeswitch.esl.spring.boot.starter.example;
+package link.thingscloud.opensips.util;
 
-import link.thingscloud.freeswitch.esl.constant.EventNames;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.annotation.EslEventName;
-import link.thingscloud.freeswitch.esl.spring.boot.starter.handler.EslEventHandler;
-import link.thingscloud.freeswitch.esl.transport.event.EslEvent;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 /**
- * <p>HeartbeatEslEventHandler class.</p>
+ * <p>RemotingUtil class.</p>
  *
  * @author : <a href="mailto:ant.zhou@aliyun.com">zhouhailin</a>
  * @version 1.0.0
  */
-@Slf4j
-@EslEventName(EventNames.HEARTBEAT)
-@Component
-public class HeartbeatEslEventHandler implements EslEventHandler {
+public class RemotingUtil {
+
     /**
-     * {@inheritDoc}
+     * private constructor
      */
-    @Override
-    public void handle(String address, EslEvent event) {
-        log.debug("HeartbeatEslEventHandler handle address[{}] EslEvent[{}].", address, event);
+    private RemotingUtil() {
+    }
+
+    /**
+     * <p>socketAddress2String.</p>
+     *
+     * @param address a {@link SocketAddress} object.
+     * @return a {@link String} object.
+     */
+    public static String socketAddress2String(final SocketAddress address) {
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
+        return inetSocketAddress.getAddress().getHostAddress() +
+                ":" +
+                inetSocketAddress.getPort();
     }
 }
