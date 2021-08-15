@@ -27,6 +27,9 @@ public class OpensipConnectEventHandler implements ClientEventHandler, ClientCon
             buf.readBytes(req);
             String body = new String(req, StandardCharsets.UTF_8);
             log.info("onConnect : {}", body);
+            // 读完就释放
+            buf.release();
+            datagramPacket.release();
         }
     }
 
@@ -41,6 +44,9 @@ public class OpensipConnectEventHandler implements ClientEventHandler, ClientCon
             buf.readBytes(req);
             String body = new String(req, StandardCharsets.UTF_8);
             log.info("handler: {}", body);
+            // 读完就释放
+            buf.release();
+            datagramPacket.release();
         }
     }
 }
