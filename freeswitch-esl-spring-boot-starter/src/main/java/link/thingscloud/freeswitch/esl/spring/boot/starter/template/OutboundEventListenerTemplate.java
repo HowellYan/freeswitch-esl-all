@@ -21,6 +21,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author th158
+ */
 @Slf4j
 public class OutboundEventListenerTemplate implements OutboundEventListener, InitializingBean {
 
@@ -37,6 +40,7 @@ public class OutboundEventListenerTemplate implements OutboundEventListener, Ini
     @Override
     public void handleEslEvent(Context context, EslEvent event) {
         String eventName = event.getEventName();
+        log.info("fs-esl outbound event name: {}", eventName);
         List<OutBoundEventHandler> handlers = handlerTable.get(eventName);
         if (!CollectionUtils.isEmpty(handlers)) {
             handlers.forEach(eventHandler -> eventHandler.handler(context, event));

@@ -38,6 +38,9 @@
         <module>freeswitch-esl-spring-boot-starter-example</module>
         <module>opensip-event-mi</module>
         <module>opensip-event-mi-spring-boot-starter</module>
+        <module>spring-boot-common</module>
+        <module>spring-boot-common/spring-boot-common-aop</module>
+        <module>spring-boot-common/spring-boot-common-core</module>
     </modules>
 
     <properties>
@@ -87,6 +90,17 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>spring-boot-common-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>spring-boot-common-aop</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>freeswitch-example</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -125,7 +139,12 @@
                 <artifactId>guava</artifactId>
                 <version>29.0-jre</version>
             </dependency>
-
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.4.4</version>
+                <scope>compile</scope>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>

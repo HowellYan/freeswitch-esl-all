@@ -25,6 +25,7 @@ import link.thingscloud.opensips.spring.boot.starter.handler.EventClientOptionHa
 import link.thingscloud.opensips.spring.boot.starter.propeties.OpensipsEventProperties;
 import link.thingscloud.opensips.spring.boot.starter.template.DefaultEventClientOptionHandlerTemplate;
 import link.thingscloud.opensips.spring.boot.starter.template.ServerConnectionListenerTemplate;
+import link.thingscloud.opensips.spring.boot.starter.template.ServerEventListenerTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -49,7 +50,7 @@ public class OpensipsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ServerEventListener.class)
     public ServerEventListener serverEventListener() {
-        return new OutboundEventListenerTemplate();
+        return new ServerEventListenerTemplate();
     }
 
     /**
