@@ -14,16 +14,18 @@
     5、可动态配置
 
 ## 模块说明
+### 1.[deployment plan](doc)
+* [opensips-fs-rtpengine](doc/DeploymentPlan4.md)
 
-### 1.[freeswitch-esl](freeswitch-esl/README.md)
+### 2.[freeswitch-esl](freeswitch-esl/README.md)
 
     freeswitch esl 客户端(详细信息，移步至子模块）
 
-### 2.[freeswitch-esl-example](freeswitch-esl-example/README.md)
+### 3.[freeswitch-esl-example](freeswitch-esl-example/README.md)
 
     基于 freeswitch-esl 客户端示例(详细信息，移步至子模块）
 
-### 3.[freeswitch-esl-spring-boot-starter](freeswitch-esl-spring-boot-starter/README.md)
+### 4.[freeswitch-esl-spring-boot-starter](freeswitch-esl-spring-boot-starter/README.md)
 
     基于 Spring boot 2.3.x, freeswitch-esl 客户端(详细信息，移步至子模块）
     
@@ -65,7 +67,7 @@
                     - CHANNEL_CREATE
                     - CHANNEL_DESTORY
 
-### 4.[freeswitch-esl-spring-boot-starter-example](freeswitch-esl-spring-boot-starter-example/README.md)
+### 5.[freeswitch-esl-spring-boot-starter-example](freeswitch-esl-spring-boot-starter-example/README.md)
 
     基于 freeswitch-esl-spring-boot-starter 客户端示例(详细信息，移步至子模块）
 
