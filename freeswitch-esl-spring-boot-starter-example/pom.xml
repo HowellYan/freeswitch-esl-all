@@ -37,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>opensip-event-mi-spring-boot-starter</artifactId>
+            <artifactId>opensips-event-mi-spring-boot-starter</artifactId>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.alibaba.boot/nacos-discovery-spring-boot-starter -->
         <dependency>
