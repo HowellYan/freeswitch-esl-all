@@ -71,8 +71,9 @@ public class EventChannelHandler extends SimpleChannelInboundHandler<DatagramPac
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.channel = ctx.channel();
-
-        this.remoteAddr = RemotingUtil.socketAddress2String(channel.remoteAddress());
+        if (channel != null && channel.remoteAddress() != null) {
+            this.remoteAddr = RemotingUtil.socketAddress2String(channel.remoteAddress());
+        }
 
         sendApiSingleLineCommand(ctx.channel(), "connect")
                 .thenAcceptAsync(response -> {
@@ -80,7 +81,7 @@ public class EventChannelHandler extends SimpleChannelInboundHandler<DatagramPac
                     listener.onConnect(new Context(ctx.channel(), EventChannelHandler.this), response);
                 }, publicExecutor)
                 .exceptionally(throwable -> {
-                    log.error("Outbound Error", throwable);
+                    log.error("Opensips Event Error", throwable);
                     ctx.channel().close();
                     listener.handleDisconnectNotice(remoteAddr, ctx);
                     return null;
@@ -124,6 +125,9 @@ public class EventChannelHandler extends SimpleChannelInboundHandler<DatagramPac
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         log.info("channelRead remoteAddr : {}, msg : {} ", remoteAddr, msg);
+        if (msg instanceof DatagramPacket) {
+            channelRead0(ctx, (DatagramPacket) msg);
+        }
     }
 
     @Override

@@ -32,9 +32,9 @@ public class NettyEventService extends AbstractServiceCommand {
             //获取通道
             channel = channelFuture.channel();
             notifyStarted();
-            log.info("outbound client server start success, listen port on {}", serverOption.port());
+            log.info("opensips event server start success, listen port on {}", serverOption.port());
         } else {
-            log.info("outbound client server start fail");
+            log.info("opensips event server start fail");
         }
         return channelFuture;
     }
@@ -42,7 +42,7 @@ public class NettyEventService extends AbstractServiceCommand {
 
     @Override
     protected void doStart() {
-        log.info("outbound client will start ...");
+        log.info("opensips client will start ...");
         if (option != null) {
             ServerOption serverOption = option.serverOption();
             if (serverOption.state() == ConnectState.INIT) {
@@ -54,7 +54,7 @@ public class NettyEventService extends AbstractServiceCommand {
 
     @Override
     protected void doStop() {
-        log.info("outbound client will shutdown ...");
+        log.info("opensips client will shutdown ...");
         channel.close();
         workerGroup.shutdownGracefully();
         notifyStopped();

@@ -15,6 +15,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author th158
+ */
 @Slf4j
 public class ServerEventListenerTemplate implements ServerEventListener, InitializingBean {
 

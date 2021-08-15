@@ -47,22 +47,11 @@ public abstract class AbstractNettyService extends AbstractService implements Ch
         bootstrap.group(workerGroup)
                 .channel(NioDatagramChannel.class)
                 .option(ChannelOption.SO_BROADCAST, true)
-                .option(ChannelOption.SO_BACKLOG, 128)
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-                .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .option(ChannelOption.SO_SNDBUF, option.sndBufSize())
                 .option(ChannelOption.SO_RCVBUF, option.rcvBufSize())
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast("encoder", new StringEncoder());
-                        pipeline.addLast("server-idle-handler", new IdleStateHandler(0, 0, option.readerIdleTimeSeconds(), MILLISECONDS));
-                        // now the inbound client logic
-                        pipeline.addLast("clientHandler", new EventChannelHandler(AbstractNettyService.this, publicExecutor));
-                    }
-                });
+                .handler(new EventChannelHandler(AbstractNettyService.this, publicExecutor));
     }
 
     @Override

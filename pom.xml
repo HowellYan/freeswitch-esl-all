@@ -53,8 +53,12 @@
         <java.version>1.8</java.version>
 
         <!-- Compiler settings properties -->
+<!--        <maven.compiler.source>1.8</maven.compiler.source>-->
+<!--        <maven.compiler.target>1.8</maven.compiler.target>-->
+<!--        -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
     </properties>
 
     <scm>
@@ -107,6 +111,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>freeswitch-esl-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>opensip-event-mi-spring-boot-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

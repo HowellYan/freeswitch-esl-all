@@ -66,7 +66,7 @@ public class OpensipsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(EventClientOptionHandler.class)
-    public EventClientOptionHandler outboundClientOptionHandler() {
+    public EventClientOptionHandler eventClientOptionHandler() {
         return new DefaultEventClientOptionHandlerTemplate();
     }
 
