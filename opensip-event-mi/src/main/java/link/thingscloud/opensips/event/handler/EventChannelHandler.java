@@ -132,12 +132,13 @@ public class EventChannelHandler extends SimpleChannelInboundHandler<DatagramPac
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-        ByteBuf buf = msg.copy().content();
-        byte[] req = new byte[buf.readableBytes()];
-        //复制内容到字节数组bytes
-        buf.readBytes(req);
-        String body = new String(req, StandardCharsets.UTF_8);
-        log.info("channelRead0 remoteAddr : {}, body : {}", remoteAddr, body);
+        this.channel = ctx.channel();
+        if (channel != null && channel.remoteAddress() != null) {
+            this.remoteAddr = RemotingUtil.socketAddress2String(channel.remoteAddress());
+        } else {
+            this.remoteAddr = msg.sender().getAddress().getHostAddress() + ":" + msg.sender().getPort();
+        }
+        log.info("channelRead0 remoteAddr : {}, msg : {}", remoteAddr, msg);
         listener.handleEvent(new Context(ctx.channel(), EventChannelHandler.this), msg);
     }
 

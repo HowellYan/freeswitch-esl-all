@@ -1,4 +1,4 @@
-# FreeSWITCH ESL ALL
+# Opensips And FreeSWITCH For In One
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc80abd17a444f0ba0d94ec807e07843)](https://app.codacy.com/manual/zhouhailin/freeswitch-esl-all?utm_source=github.com&utm_medium=referral&utm_content=zhouhailin/freeswitch-esl-all&utm_campaign=Badge_Grade_Settings)
 [![Jdk Version](https://img.shields.io/badge/JDK-1.8-green.svg)](https://img.shields.io/badge/JDK-1.8-green.svg)
@@ -8,9 +8,9 @@
 
 ## 目标
 
-    1、支持连接FreeSWITCH大规模集群
+    1、支持连接Opensips、FreeSWITCH大规模集群
     2、更易于集成使用
-    4、与spring boot 2.3.x深度整合，提供 starter
+    4、与spring boot 2.3.x 整合，nacos 服务发现
     5、可动态配置
 
 ## 模块说明
@@ -103,7 +103,7 @@
 
 ## 志同道合(微信) - 请备注来源
 
-![微信](https://gitee.com/zhouhailin/images/raw/master/a0eb627b9b6bc1c6da8f19d3292ebce.jpg)
+![微信](doc/img/wechat.jpg)
 
 ## License
 
